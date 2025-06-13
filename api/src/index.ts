@@ -1,11 +1,18 @@
 import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
-import jwt from 'jsonwebtoken';
 import cookieParser from 'cookie-parser';
 import snippetsRouter from './routes/snippets';
 import authRouter from './routes/auth';
 import { jwtAuth } from './middleware/jwtAuth';
+
+declare global {
+  namespace Express {
+    interface Request {
+      user?: any;
+    }
+  }
+}
 
 const app = express();
 app.use(express.json());

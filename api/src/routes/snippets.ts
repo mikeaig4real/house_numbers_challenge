@@ -35,9 +35,34 @@ router.post('/', requireAuth, async (req: AuthRequest, res: Response): Promise<v
   }
 
   try {
-   
+    const existingSnippet = await Snippet.findOne({ text: trimmedText, user: req.user!.id });
+    if (existingSnippet) {
+      res.status(200).json({
+        id: existingSnippet._id,
+        text: existingSnippet.text,
+        summary: existingSnippet.summary,
+      });
+      return;
+    }
+    const normalizedLimit = Math.min(wordLimit, wordCount);
+    const { error, text: summary } = await summarizeContent(trimmedText, normalizedLimit);
+    if (error) {
+      res.status(500).json({ message: 'Failed to summarize content.' });
+      return;
+    }
+    const summaryWordCount = countWords(summary);
+    if (summaryWordCount > wordLimit) {
+      res.status(400).json({
+        message: `Summary must be ${wordLimit} words or fewer, but got ${summaryWordCount}.`,
+      });
+      return;
+    }
+    const snippet = new Snippet({ text: trimmedText, summary, user: req.user!.id });
+    await snippet.save();
     res.status(201).json({
-     
+      id: snippet._id,
+      text: snippet.text,
+      summary: snippet.summary,
     });
   } catch (error) {
     console.error('Error creating snippet:', error);
