@@ -53,6 +53,26 @@ cd api && npm test
 
 ---
 
+---
+
+## Authentication (Session-based, JWT, HttpOnly Cookie)
+
+Snipify uses secure, session-based authentication:
+
+- **JWTs** are signed with a secret and stored in an HttpOnly cookie.
+- **Password hashing** is done with bcryptjs.
+- **Cookies** are managed with cookie-parser.
+- **All endpoints** are testable and do not rely on third-party auth providers.
+
+### Backend (Express)
+
+- JWTs are signed and verified using `jsonwebtoken`.
+- JWT is set as an HttpOnly cookie on login/signup.
+- On each request, the JWT is parsed and verified from the cookie.
+- Passwords are hashed with `bcryptjs`.
+- **All snippet endpoints require authentication and are user-specific.**
+- **Custom middleware**: JWT authentication (`middleware/jwtAuth.ts`) and route protection (`middleware/requireAuth.ts`) are used for secure access.
+
 ## API Documentation
 
 ### POST /auth/signup
