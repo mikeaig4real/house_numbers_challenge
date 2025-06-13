@@ -3,7 +3,9 @@ import express from 'express';
 import cors from 'cors';
 import jwt from 'jsonwebtoken';
 import cookieParser from 'cookie-parser';
+import snippetsRouter from './routes/snippets';
 import authRouter from './routes/auth';
+import { jwtAuth } from './middleware/jwtAuth';
 
 const app = express();
 app.use(express.json());
@@ -19,6 +21,8 @@ app.use(
 );
 
 // routes
+app.use( '/api/snippets', jwtAuth );
+app.use('/api/snippets', snippetsRouter);
 app.use( '/api/auth', authRouter );
 
 
