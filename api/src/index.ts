@@ -3,6 +3,7 @@ import express from 'express';
 import cors from 'cors';
 import jwt from 'jsonwebtoken';
 import cookieParser from 'cookie-parser';
+import authRouter from './routes/auth';
 
 const app = express();
 app.use(express.json());
@@ -18,6 +19,8 @@ app.use(
 );
 
 // routes
+app.use( '/api/auth', authRouter );
+
 
 app.get('/', (req, res) => {
   res.send('Welcome to Snipify API!');
