@@ -18,10 +18,10 @@ const SnippetSchema = new Schema<ISnippet>(
       required: true,
       validate: {
         validator: function (v: string) {
-      
+          return v.trim().split(/\s+/).length <= SUMMARY_COUNT;
         },
         message: (props: any) =>
-          ``,
+          `Summary must be ${SUMMARY_COUNT} words or fewer, but got ${props.value.trim().split(/\s+/).length}.`,
       },
     },
     user: { type: Schema.Types.ObjectId, ref: 'User', required: true },
