@@ -27,8 +27,10 @@ export function getModel(): GenerativeModel {
 
 export async function summarizeContent(text: string, wordCount: number = wordLimit): Promise<{ error: boolean; text: string }> {
   try {
-
-    const responseText = "";
+    const model = getModel();
+    const prompt = makePrompt(text, wordCount);
+    const { response } = await model.generateContent(prompt);
+    const responseText = response.text();
     return {
       error: false,
       text: responseText,
@@ -53,7 +55,13 @@ export async function summarizeContentStream(
   try
   {
     let fullText = "";
-    
+    const model = getModel();
+    const prompt = makePrompt(text, wordCount);
+    const { stream } = await model.generateContentStream(prompt);
+    await streamToCallBack(stream, (chunk) => {
+      cb( chunk );
+      fullText += chunk;
+    } );
     return {
       error: false,
       text: fullText,
