@@ -72,9 +72,13 @@ router.post('/', requireAuth, async (req: AuthRequest, res: Response): Promise<v
 
 router.get('/', requireAuth, async (req: AuthRequest, res: Response) => {
   try {
-    const snippets = []
-    res.status( 200 ).json(
-      []
+    const snippets = await Snippet.find({ user: req.user!.id }).sort({ createdAt: -1 });
+    res.status(200).json(
+      snippets.map((snippet) => ({
+        id: snippet._id,
+        text: snippet.text,
+        summary: snippet.summary,
+      })),
     );
   } catch (error) {
     console.error('Error fetching snippets:', error);
@@ -84,8 +88,15 @@ router.get('/', requireAuth, async (req: AuthRequest, res: Response) => {
 
 router.get('/:id', requireAuth, async (req: AuthRequest, res: Response): Promise<void> => {
   try {
+    const snippet = await Snippet.findOne({ _id: req.params.id, user: req.user!.id });
+    if (!snippet) {
+      res.status(404).json({ message: 'Snippet not found.' });
+      return;
+    }
     res.status(200).json({
-    
+      id: snippet._id,
+      text: snippet.text,
+      summary: snippet.summary,
     });
   } catch (error) {
     console.error('Error fetching snippet:', error);
