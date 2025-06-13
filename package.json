@@ -1,0 +1,12 @@
+{
+  "name": "snipify-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "docker compose up --build",
+    "start:manual": "concurrently \"npm --prefix api run dev\" \"npm --prefix ui run dev\""
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}

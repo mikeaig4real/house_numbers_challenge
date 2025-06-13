@@ -1,0 +1,25 @@
+version: "3.8"
+services:
+  mongo:
+    image: mongo:7
+    restart: always
+    ports:
+      - 27017:27017
+    environment:
+      MONGO_INITDB_DATABASE: snipify
+  api:
+    build: ./api
+    ports:
+      - "3000:3000"
+    env_file:
+      - ./api/.env
+    depends_on:
+      - mongo
+  ui:
+    build: ./ui
+    ports:
+      - "3030:3030"
+    env_file:
+      - ./ui/.env
+    depends_on:
+      - api

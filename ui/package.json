@@ -1,0 +1,57 @@
+{
+  "name": "snipify-ui",
+  "version": "1.0.0",
+  "description": "The UI for Snipify, a web application for making snippets/summaries.",
+  "private": true,
+  "sideEffects": false,
+  "type": "module",
+  "scripts": {
+    "build": "remix vite:build",
+    "dev": "remix --port 3030 vite:dev",
+    "lint": "eslint --ignore-path .gitignore --cache --cache-location ./node_modules/.cache/eslint .",
+    "start": "remix-serve ./build/server/index.js",
+    "typecheck": "tsc",
+    "format": "prettier --write \"app/**/*.{ts,tsx,js,jsx}\"",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@remix-run/node": "^2.16.8",
+    "@remix-run/react": "^2.16.8",
+    "@remix-run/serve": "^2.16.8",
+    "axios": "^1.9.0",
+    "framer-motion": "^12.18.1",
+    "isbot": "^4.1.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-icons": "^5.5.0"
+  },
+  "devDependencies": {
+    "@remix-run/dev": "^2.16.8",
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^14.0.0",
+    "@types/react": "^18.2.20",
+    "@types/react-dom": "^18.2.7",
+    "@typescript-eslint/eslint-plugin": "^6.7.4",
+    "@typescript-eslint/parser": "^6.7.4",
+    "@vitest/ui": "^1.6.1",
+    "autoprefixer": "^10.4.19",
+    "concurrently": "^8.2.2",
+    "eslint": "^8.38.0",
+    "eslint-import-resolver-typescript": "^3.6.1",
+    "eslint-plugin-import": "^2.28.1",
+    "eslint-plugin-jsx-a11y": "^6.7.1",
+    "eslint-plugin-react": "^7.33.2",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "jsdom": "^26.1.0",
+    "postcss": "^8.4.38",
+    "prettier": "^3.0.0",
+    "tailwindcss": "^3.4.4",
+    "typescript": "^5.1.6",
+    "vite": "^6.0.0",
+    "vite-tsconfig-paths": "^4.2.1",
+    "vitest": "^1.6.1"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}

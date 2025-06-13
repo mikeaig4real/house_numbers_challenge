@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "NodeNext",
+    "outDir": "dist",
+    "strict": true,
+    "esModuleInterop": true,
+    "moduleResolution": "nodeNext",
+    "types": ["vitest"],
+  },
+  "include": ["src", "tests"],
+  "exclude": ["node_modules", "dist"]
+}
