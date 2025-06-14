@@ -73,7 +73,7 @@ Snipify uses secure, session-based authentication:
 
 ### Frontend (Remix)
 
-- Auth forms POST to `/auth/signup` and `/auth/login`.
+- Auth forms POST to `/api/auth/signup` and `/api/auth/login`.
 - On success, the API sets the HttpOnly cookie.
 - Use Remix loaders/actions to check authentication by reading cookies sent from the server.
 - **Snippets are displayed as cards in a responsive grid.**
@@ -96,7 +96,7 @@ Snipify uses secure, session-based authentication:
 
 ## API Documentation
 
-### POST api/auth/signup
+### POST /api/auth/signup
 
 Register a new user. Sets a JWT as an HttpOnly cookie.
 
@@ -132,7 +132,7 @@ Login an existing user. Sets a JWT as an HttpOnly cookie.
 - `200 OK` with user info and cookie set
 - `400 Bad Request` if credentials are invalid
 
-### POST api/auth/logout
+### POST /api/auth/logout
 
 Logs out the user by clearing the auth cookie.
 
