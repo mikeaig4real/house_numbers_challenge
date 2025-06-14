@@ -88,15 +88,15 @@ Snipify uses secure, session-based authentication:
 
 ### Example Endpoints
 
-- **POST `/auth/signup`** — Register a new user (sets cookie)
-- **POST `/auth/login`** — Login (sets cookie)
-- **POST `/auth/logout`** — Logout (clears cookie)
+- **POST `/api/auth/signup`** — Register a new user (sets cookie)
+- **POST `/api/auth/login`** — Login (sets cookie)
+- **POST `/api/auth/logout`** — Logout (clears cookie)
 
 ---
 
 ## API Documentation
 
-### POST /auth/signup
+### POST api/auth/signup
 
 Register a new user. Sets a JWT as an HttpOnly cookie.
 
@@ -114,7 +114,7 @@ Register a new user. Sets a JWT as an HttpOnly cookie.
 - `201 Created` with user info and cookie set
 - `400 Bad Request` if email already registered or missing fields
 
-### POST /auth/login
+### POST /api/auth/login
 
 Login an existing user. Sets a JWT as an HttpOnly cookie.
 
@@ -132,7 +132,7 @@ Login an existing user. Sets a JWT as an HttpOnly cookie.
 - `200 OK` with user info and cookie set
 - `400 Bad Request` if credentials are invalid
 
-### POST /auth/logout
+### POST api/auth/logout
 
 Logs out the user by clearing the auth cookie.
 
@@ -142,7 +142,7 @@ Logs out the user by clearing the auth cookie.
 
 ---
 
-### POST /snippets
+### POST /api/snippets
 
 Create a new snippet and get its summary. **Requires authentication. Snippet is always associated with the current user.**
 
@@ -173,34 +173,7 @@ Create a new snippet and get its summary. **Requires authentication. Snippet is 
 - `401 Unauthorized` — If not authenticated.
 - `500 Internal Server Error` — On server/AI failure.
 
-
-## Available Commands
-
-### Root
-
-- `npm run dev` — Start all services with Docker Compose (API, UI, MongoDB)
-- `npm run start:manual` — Start API and UI dev servers manually (without Docker)
-
-### API (`api`)
-
-- `npm run start` — Build and run the API (production)
-- `npm run dev` — Start API in development mode with hot reload
-- `npm run test` — Run backend tests
-- `npm run lint` — Lint code (currently a placeholder)
-- `npm run format` — Format code with Prettier
-- `npm run build` — Compile TypeScript
-
-### UI (`ui`)
-
-- `npm run build` — Build the Remix app
-- `npm run dev` — Start Remix dev server
-- `npm run lint` — Lint frontend code with ESLint
-- `npm run start` — Start the built Remix app (production)
-- `npm run typecheck` — Type-check with TypeScript
-- `npm run format` — Format code with Prettier
-- `npm run test` — Run frontend tests
-
-### GET /snippets
+### GET /api/snippets
 
 Get all snippets for the authenticated user.
 
@@ -213,7 +186,7 @@ Get all snippets for the authenticated user.
 ]
 ```
 
-### GET /snippets/:id
+### GET /api/snippets/:id
 
 Get a specific snippet by ID (must belong to the authenticated user).
 
@@ -253,6 +226,32 @@ curl http://localhost:3000/api/snippets/<id> --cookie "snipify_token=..."
 ## AI Key Management
 
 - Place your Gemini API key in the `.env` file of `/api` as `GEMINI_API_KEY`.
+  
+  ## Available Commands
+  
+  ### Root
+  
+  - `npm run dev` — Start all services with Docker Compose (API, UI, MongoDB)
+  - `npm run start:manual` — Start API and UI dev servers manually (without Docker)
+  
+  ### API (`api`)
+  
+  - `npm run start` — Build and run the API (production)
+  - `npm run dev` — Start API in development mode with hot reload
+  - `npm run test` — Run backend tests
+  - `npm run lint` — Lint code (currently a placeholder)
+  - `npm run format` — Format code with Prettier
+  - `npm run build` — Compile TypeScript
+  
+  ### UI (`ui`)
+  
+  - `npm run build` — Build the Remix app
+  - `npm run dev` — Start Remix dev server
+  - `npm run lint` — Lint frontend code with ESLint
+  - `npm run start` — Start the built Remix app (production)
+  - `npm run typecheck` — Type-check with TypeScript
+  - `npm run format` — Format code with Prettier
+  - `npm run test` — Run frontend tests
 
 ## Reflection
 
