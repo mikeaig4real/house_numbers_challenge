@@ -29,6 +29,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const navigate = useNavigate();
 
   useEffect(() => {
+    // Load user from localStorage on mount
     const stored = localStorage.getItem( USER_KEY );
     if (stored) {
       try {

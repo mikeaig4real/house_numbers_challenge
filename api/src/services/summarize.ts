@@ -1,8 +1,7 @@
 import dotenv from 'dotenv';
 dotenv.config();
 import { GenerativeModel } from '@google/generative-ai';
-import { Response } from "express";
-import { createModel, streamToCallBack, streamToText } from '../utils';
+import { createModel, streamToCallBack } from '../utils';
 
 let globalModel: null | GenerativeModel = null;
 

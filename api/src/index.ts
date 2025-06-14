@@ -1,10 +1,12 @@
 import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
-import cookieParser from 'cookie-parser';
+import { connectDB } from './db/connect';
 import snippetsRouter from './routes/snippets';
 import authRouter from './routes/auth';
+import sseRouter from './routes/sse';
 import { jwtAuth } from './middleware/jwtAuth';
+import cookieParser from 'cookie-parser';
 
 declare global {
   namespace Express {
@@ -18,7 +20,7 @@ const app = express();
 app.use(express.json());
 app.use(cookieParser());
 
-// CORS setup for credentials and FE_URL
+
 const FE_URL = process.env.FE_URL || 'http://localhost:3030';
 app.use(
   cors({
@@ -27,11 +29,11 @@ app.use(
   }),
 );
 
-// routes
-app.use( '/api/snippets', jwtAuth );
-app.use('/api/snippets', snippetsRouter);
-app.use( '/api/auth', authRouter );
 
+app.use('/api/snippets', jwtAuth);
+app.use('/api/snippets', snippetsRouter);
+app.use('/api/auth', authRouter);
+app.use('/api/sse', sseRouter);
 
 app.get('/', (req, res) => {
   res.send('Welcome to Snipify API!');
@@ -39,6 +41,8 @@ app.get('/', (req, res) => {
 
 const startApp = async () => {
   try {
+    await connectDB();
+    console.log('Connected to MongoDB');
     const PORT = process.env.BE_PORT ? +process.env.BE_PORT : 3000;
     app.listen(PORT, () => {
       console.log(`Snipify API running on port ${PORT}`);
@@ -50,7 +54,6 @@ const startApp = async () => {
 };
 
 if (process.env.NODE_ENV !== 'test') {
-  const PORT = process.env.PORT || 3000;
   startApp();
 }
 

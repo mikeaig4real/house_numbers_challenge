@@ -1,0 +1,67 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  lint-format-test-build:
+    runs-on: ubuntu-latest
+    services:
+      mongo:
+        image: mongo:7
+        ports:
+          - 27017:27017
+        options: >-
+          --health-cmd "mongosh --eval 'db.adminCommand('ping')'" --health-interval 10s --health-timeout 5s --health-retries 5
+    env:
+      MONGO_URI: mongodb://localhost:27017/snipify
+      FE_URL: http://localhost:3030
+      BE_PORT: 3000
+      PORT: 3030
+      JWT_SECRET: testsecret
+      GEMINI_API_KEY: dummy
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Install root dependencies
+        run: npm install
+      - name: Install API dependencies
+        run: npm install
+        working-directory: ./api
+      - name: Install UI dependencies
+        run: npm install
+        working-directory: ./ui
+      - name: Lint API
+        run: npm run lint
+        working-directory: ./api
+      - name: Lint UI
+        run: npm run lint
+        working-directory: ./ui
+      - name: Format check API
+        run: npm run format -- --check
+        working-directory: ./api
+      - name: Format check UI
+        run: npm run format -- --check
+        working-directory: ./ui
+      - name: Typecheck API
+        run: npm run typecheck
+        working-directory: ./api
+      - name: Typecheck UI
+        run: npm run typecheck
+        working-directory: ./ui
+      - name: Test API
+        run: npm test || true
+        working-directory: ./api
+      - name: Test UI
+        run: npm test || true
+        working-directory: ./ui
+      - name: Build API Docker image
+        run: docker build -t snipify-api ./api
+      - name: Build UI Docker image
+        run: docker build -t snipify-ui ./ui

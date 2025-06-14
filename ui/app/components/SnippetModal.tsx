@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { useState } from 'react';
 import { FiCopy, FiCheck } from 'react-icons/fi';
+import SSESummary from './SSESummary';
 
 interface Snippet {
   id: string;
@@ -11,9 +12,11 @@ interface Snippet {
 export default function SnippetModal({
   snippet,
   onClose,
+  useSSE = false,
 }: {
   snippet: Snippet;
   onClose: () => void;
+  useSSE?: boolean;
 }) {
   const [copied, setCopied] = useState(false);
   const handleCopy = () => {
@@ -40,6 +43,10 @@ export default function SnippetModal({
       >
         {/* Summary (left) */}
         <div className="w-1/2 p-8 overflow-y-auto border-r border-purple-900 flex flex-col relative">
+          {useSSE ? (
+            <SSESummary text={snippet.text} />
+          ) : (
+            <>
               <h3 className="text-xl font-bold text-purple-200 mb-4 flex items-center justify-between">
                 <span>Summary</span>
                 <button
@@ -52,6 +59,8 @@ export default function SnippetModal({
                 </button>
               </h3>
               <div className="text-white whitespace-pre-line flex-1">{snippet.summary}</div>
+            </>
+          )}
         </div>
         {/* Full text (right) */}
         <div className="w-1/2 p-8 overflow-y-auto flex flex-col">

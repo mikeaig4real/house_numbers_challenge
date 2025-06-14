@@ -48,6 +48,7 @@ describe('Snippets API', () => {
       expect(res.body.text).toBe(text);
       expect(res.body.summary).toBe(summarizeTextFake(text, wordLimit).text);
       expect(countWords(res.body.summary)).toBeLessThanOrEqual(wordLimit);
+      // Check DB count
       const count = await Snippet.countDocuments();
       expect(count).toBe(1);
     });
@@ -96,6 +97,7 @@ describe('Snippets API', () => {
     });
 
     it('POST /api/snippets returns 400 if summary exceeds word limit', async () => {
+      // Simulate a summarizer that returns too many words
       vi.spyOn(summarizeService, 'summarizeContent').mockResolvedValue(makeLongText(100));
       const { text } = makeLongText(100);
       const res = await request(app).post('/api/snippets').set('Cookie', cookie).send({ text });
@@ -168,6 +170,7 @@ describe('Snippets API', () => {
         text: shorterText,
       });
       await sleep(2000); // to avoid rate limiting
+      // Now test with a longer text
       const longRes = await request(app)
         .post('/api/snippets')
         .set('Cookie', cookie)

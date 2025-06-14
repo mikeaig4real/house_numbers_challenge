@@ -24,7 +24,7 @@ const SnippetSchema = new Schema<ISnippet>(
           `Summary must be ${SUMMARY_COUNT} words or fewer, but got ${props.value.trim().split(/\s+/).length}.`,
       },
     },
-    user: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+    user: { type: Schema.Types.ObjectId, ref: 'User', required: true }, // Add user field
   },
   { timestamps: true },
 );

@@ -2,8 +2,7 @@ import { Outlet, useNavigate } from '@remix-run/react';
 import { useAuth } from '../context/AuthContext';
 import { useEffect } from 'react';
 
-export default function User ()
-{
+export default function User() {
   const { user } = useAuth();
   const navigate = useNavigate();
   useEffect(() => {

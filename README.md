@@ -53,8 +53,6 @@ cd api && npm test
 
 ---
 
----
-
 ## Authentication (Session-based, JWT, HttpOnly Cookie)
 
 Snipify uses secure, session-based authentication:
@@ -72,6 +70,29 @@ Snipify uses secure, session-based authentication:
 - Passwords are hashed with `bcryptjs`.
 - **All snippet endpoints require authentication and are user-specific.**
 - **Custom middleware**: JWT authentication (`middleware/jwtAuth.ts`) and route protection (`middleware/requireAuth.ts`) are used for secure access.
+
+### Frontend (Remix)
+
+- Auth forms POST to `/auth/signup` and `/auth/login`.
+- On success, the API sets the HttpOnly cookie.
+- Use Remix loaders/actions to check authentication by reading cookies sent from the server.
+- **Snippets are displayed as cards in a responsive grid.**
+- **Copy-to-clipboard**: The summary in the snippet modal has a copy icon (top right of the left panel) using `react-icons`.
+
+### Libraries Used
+
+- `jsonwebtoken`
+- `cookie-parser`
+- `bcryptjs`
+- `react-icons` (UI)
+
+### Example Endpoints
+
+- **POST `/auth/signup`** — Register a new user (sets cookie)
+- **POST `/auth/login`** — Login (sets cookie)
+- **POST `/auth/logout`** — Logout (clears cookie)
+
+---
 
 ## API Documentation
 
@@ -152,6 +173,33 @@ Create a new snippet and get its summary. **Requires authentication. Snippet is 
 - `401 Unauthorized` — If not authenticated.
 - `500 Internal Server Error` — On server/AI failure.
 
+
+## Available Commands
+
+### Root
+
+- `npm run dev` — Start all services with Docker Compose (API, UI, MongoDB)
+- `npm run start:manual` — Start API and UI dev servers manually (without Docker)
+
+### API (`api`)
+
+- `npm run start` — Build and run the API (production)
+- `npm run dev` — Start API in development mode with hot reload
+- `npm run test` — Run backend tests
+- `npm run lint` — Lint code (currently a placeholder)
+- `npm run format` — Format code with Prettier
+- `npm run build` — Compile TypeScript
+
+### UI (`ui`)
+
+- `npm run build` — Build the Remix app
+- `npm run dev` — Start Remix dev server
+- `npm run lint` — Lint frontend code with ESLint
+- `npm run start` — Start the built Remix app (production)
+- `npm run typecheck` — Type-check with TypeScript
+- `npm run format` — Format code with Prettier
+- `npm run test` — Run frontend tests
+
 ### GET /snippets
 
 Get all snippets for the authenticated user.
@@ -210,8 +258,10 @@ curl http://localhost:3000/api/snippets/<id> --cookie "snipify_token=..."
 
 _What I’d improve with more time:_
 
-- TBD
+- Probably implement the event with socket.io for real-time updates since i could'nt make SSE work yet
+- Add more client-side tests
+- Use axios for API calls in the frontend for better error handling and response management
 
 _Trade-offs made:_
 
-- TBD
+- Focused on a backend-first approach, Remix offers both server and client capabilities, would have maybe reduced round trips of client-server requests.

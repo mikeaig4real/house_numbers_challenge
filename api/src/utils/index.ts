@@ -1,6 +1,6 @@
 import dotenv from 'dotenv';
 dotenv.config();
-import { GoogleGenerativeAI, GenerativeModel, EnhancedGenerateContentResponse } from '@google/generative-ai';
+import { GoogleGenerativeAI, EnhancedGenerateContentResponse } from '@google/generative-ai';
 
 const { GEMINI_API_KEY, GEMINI_MODEL } = process.env;
 
