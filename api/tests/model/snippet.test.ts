@@ -4,7 +4,7 @@ import { expect, test, afterAll, beforeAll, describe, it } from 'vitest';
 import mongoose from 'mongoose';
 
 beforeAll(async () => {
-  await connectDB();
+  await connectDB(true);
 });
 afterAll(async () => {
   await disconnectDB();

@@ -15,7 +15,7 @@ const testUser = { email: 'snippetuser@example.com', password: 'TestPass123!' };
 let cookie: string;
 
 beforeAll(async () => {
-  await connectDB();
+  await connectDB(true);
   await User.deleteMany({ email: testUser.email });
   await request(app).post('/api/auth/signup').send(testUser);
   const loginRes = await request(app).post('/api/auth/login').send(testUser);

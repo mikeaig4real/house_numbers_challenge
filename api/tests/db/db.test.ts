@@ -5,7 +5,7 @@ import { connectDB, disconnectDB } from '../../src/db/connect';
 dotenv.config();
 
 test('MongoDB connection works', async () => {
-  const conn = await connectDB();
+  const conn = await connectDB(true);
   expect(conn.connection.readyState).toBe(1);
   await disconnectDB();
 });
