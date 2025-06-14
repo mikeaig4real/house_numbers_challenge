@@ -75,16 +75,16 @@ Snipify uses secure, session-based authentication:
 
 - Auth forms POST to `/api/auth/signup` and `/api/auth/login`.
 - On success, the API sets the HttpOnly cookie.
-- Use Remix loaders/actions to check authentication by reading cookies sent from the server.
 - **Snippets are displayed as cards in a responsive grid.**
 - **Copy-to-clipboard**: The summary in the snippet modal has a copy icon (top right of the left panel) using `react-icons`.
 
-### Libraries Used
+### Some Libraries Used
 
 - `jsonwebtoken`
 - `cookie-parser`
 - `bcryptjs`
 - `react-icons` (UI)
+- `framer.motion` (UI)
 
 ### Example Endpoints
 
