@@ -6,6 +6,7 @@ import snippetsRouter from './routes/snippets';
 import authRouter from './routes/auth';
 import sseRouter from './routes/sse';
 import { jwtAuth } from './middleware/jwtAuth';
+import { Server, Socket } from "socket.io";
 import cookieParser from 'cookie-parser';
 
 declare global {
