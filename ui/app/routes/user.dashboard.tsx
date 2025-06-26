@@ -7,52 +7,41 @@ import SnippetModal from '../components/SnippetModal';
 import FloatingPlusButton from '../components/FloatingPlusButton';
 import CreateSnippetModal from '../components/CreateSnippetModal';
 import Loader from '../components/Loader';
-
-interface Snippet {
-  id: string;
-  summary: string;
-  text: string;
-}
+import { SnippetAPI } from '../api';
+import { AxiosError } from 'axios';
+import { SnippetType } from '../types';
 
 export default function UserDashboard() {
   const { user, logout } = useAuth();
-  const [snippets, setSnippets] = useState<Snippet[]>([]);
-  const [selected, setSelected] = useState<Snippet | null>(null);
+  const [snippets, setSnippets] = useState<SnippetType.Snippet[]>([]);
+  const [selected, setSelected] = useState<SnippetType.Snippet | null>(null);
   const [showCreate, setShowCreate] = useState(false);
   const [newText, setNewText] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [useSSE, setUseSSE] = useState(false);
 
+  const getSnippets = async () => {
+    const data = await SnippetAPI.getSnippets();
+    setSnippets(data);
+  };
+
   useEffect(() => {
-    fetch('http://localhost:3000/api/snippets', { credentials: 'include' })
-      .then((res) => res.json())
-      .then((data) => setSnippets(data || []));
+    getSnippets();
   }, []);
 
   async function handleCreateSnippet() {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch('http://localhost:3000/api/snippets', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({ text: newText }),
-      });
-      if (!res.ok) throw new Error('Failed to create snippet');
-      const data = await res.json();
-      // optimistically update the UI
+      const data = await SnippetAPI.createSnippet( newText );
       setSnippets((s) => [data, ...s]);
       setSelected(data);
       setShowCreate(false);
       setNewText('');
-    } catch (e: unknown) {
-      if (e instanceof Error) {
-        setError(e.message);
-      } else {
-        setError('An unknown error occurred');
-      }
+    } catch (e) {
+      const axiosError = e as AxiosError;
+      setError(axiosError.message || 'Creating Snippet failed');
     } finally {
       setLoading(false);
     }

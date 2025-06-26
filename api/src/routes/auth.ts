@@ -63,8 +63,10 @@ router.post('/login', async (req: Request, res: Response): Promise<void> => {
 });
 
 
-router.post('/logout', (req: Request, res: Response) => {
-  res.clearCookie(COOKIE_NAME, COOKIE_OPTIONS);
+router.post( '/logout', ( req: Request, res: Response ) =>
+{
+  const { maxAge, ...CLEAR_COOKIE_OPTIONS } = COOKIE_OPTIONS;
+  res.clearCookie(COOKIE_NAME, CLEAR_COOKIE_OPTIONS);
   res.status(204).end();
 });
 

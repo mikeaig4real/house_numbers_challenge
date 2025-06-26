@@ -1,6 +1,8 @@
 import { Link, useNavigate } from '@remix-run/react';
 import { useAuth } from '../context/AuthContext';
 import { useState } from 'react';
+import { AuthAPI } from '../api';
+import { AxiosError } from 'axios';
 
 export default function SignUp() {
   const { setUser } = useAuth();
@@ -14,22 +16,12 @@ export default function SignUp() {
     const email = (form.elements.namedItem('email') as HTMLInputElement).value;
     const password = (form.elements.namedItem('password') as HTMLInputElement).value;
     try {
-      const res = await fetch('http://localhost:3000/api/auth/signup', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({ email, password }),
-      });
-      if (!res.ok) {
-        const data = await res.json();
-        setError(data.error || 'Signup failed');
-        return;
-      }
-      const data = await res.json();
+      const data = await AuthAPI.signIn(email, password);
       setUser({ id: data.id, email: data.email });
       navigate('/user/dashboard');
     } catch (err) {
-      setError('Signup failed');
+      const axiosError = err as AxiosError;
+      setError(axiosError.message || 'Sign in failed');
     }
   }
 
@@ -77,7 +69,7 @@ export default function SignUp() {
         {error && <p className="text-red-400 text-center text-sm">{error}</p>}
         <p className="text-center text-purple-300 text-sm mt-2">
           Already registered?{' '}
-          <Link to="/auth/signin" className="text-white hover:underline font-semibold">
+          <Link to="/auth/sign_in" className="text-white hover:underline font-semibold">
             Sign in
           </Link>
         </p>

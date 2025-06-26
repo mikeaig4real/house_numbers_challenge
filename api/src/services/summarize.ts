@@ -10,10 +10,11 @@ const wordDelta = process.env.SUMMARY_WORD_DELTA ? parseInt(process.env.SUMMARY_
 const wordLimit = process.env.SUMMARY_WORD_LIMIT ? parseInt(process.env.SUMMARY_WORD_LIMIT) : 30;
 
 export function makePrompt(text: string, wordCount: number = wordLimit, delta: number = wordDelta): string {
-  return `Summarize the following content:
-    ${text};
-    in <= ${Math.max(delta, wordCount - delta)} words.
-    !!!IMPORTANT: if you cannot just give me a simple sentence.
+  return `Summarize the following content in ${Math.max(delta, wordCount - delta)} words or fewer:
+
+    "${text}"
+
+    !!!IMPORTANT: If a short summary isn't possible, return a concise sentence instead.
     `;
 }
 
