@@ -4,7 +4,8 @@ import { summarizeContentStream } from '../services/summarize';
 import { countWords } from '../utils';
 import { requireAuth } from '../middleware/requireAuth';
 
-const wordLimit = process.env.SUMMARY_WORD_LIMIT ? parseInt(process.env.SUMMARY_WORD_LIMIT) : 30;
+const wordLimit = process.env.SUMMARY_WORD_LIMIT ? parseInt( process.env.SUMMARY_WORD_LIMIT ) : 30;
+const wordDelta = process.env.SUMMARY_WORD_DELTA ? parseInt(process.env.SUMMARY_WORD_DELTA) : 5;
 
 const router = Router();
 
@@ -24,8 +25,8 @@ router.get('/stream/:text', requireAuth, async (req: Request, res: Response): Pr
   const trimmedText = text.trim();
   const wordCount = countWords(trimmedText);
 
-  if (wordCount < 5) {
-    res.status(400).end('Text must contain at least 5 words.');
+  if (wordCount < wordDelta) {
+    res.status(400).end(`Text must contain at least ${wordDelta} words.`);
     return;
   }
 

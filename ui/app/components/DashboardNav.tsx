@@ -1,11 +1,13 @@
 export default function DashboardNav({
   userEmail,
   onLogout,
+  useStreaming,
+  setUseStreaming,
 }: {
   userEmail: string | undefined;
   onLogout: () => void;
-  useSSE: boolean;
-  setUseSSE: (v: boolean) => void;
+  useStreaming: boolean;
+  setUseStreaming: (v: boolean) => void;
 }) {
   return (
     <nav className="flex flex-col sm:flex-row items-center justify-between px-4 sm:px-8 py-4 border-b border-purple-900 gap-2">
@@ -16,11 +18,11 @@ export default function DashboardNav({
         <label className="flex items-center gap-1 text-purple-200 text-sm cursor-pointer select-none">
           <input
             type="checkbox"
-            checked={false}
-            onChange={() => {}}
+            checked={useStreaming}
+            onChange={() => setUseStreaming(!useStreaming)}
             className="accent-purple-700 mr-1"
           />
-          Use SSE
+          Use Streaming
         </label>
         <button
           onClick={onLogout}

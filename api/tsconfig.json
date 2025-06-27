@@ -6,7 +6,8 @@
     "strict": true,
     "esModuleInterop": true,
     "moduleResolution": "nodeNext",
-    "types": ["vitest"],
+    "types": ["vitest", "node"],
+    "typeRoots": ["./types", "./node_modules/@types"]
   },
   "include": ["src", "tests"],
   "exclude": ["node_modules", "dist"]
