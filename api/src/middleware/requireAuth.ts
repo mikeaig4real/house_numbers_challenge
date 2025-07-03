@@ -15,7 +15,7 @@ export function requireAuth(req: AuthRequest, res: Response, next: NextFunction)
     const decoded = jwt.verify(token, config.jwt.secret) as Partial<User>;
     req.user = decoded;
   } catch (error) {
-    console.error('JWT verification failed:', error);
+    console.error('JWT verification failed:', error); // possible issues from verifying the token (expired, invalid, etc.)
     res.status(401).json({ message: 'Unauthorized: Invalid token' });
     return;
   }
