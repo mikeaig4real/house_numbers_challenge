@@ -87,5 +87,29 @@ export function countWords ( text: string ): number
     return text.trim().split(/\s+/).length;
 }
 
-export const sleep = (time: number) => new Promise((resolve) => setTimeout(resolve, time));
+export const sleep = ( time: number ) => new Promise( ( resolve ) => setTimeout( resolve, time ) );
+
+/**
+ * Converts a human-readable expiration string like "7d", "12h", "30m" into milliseconds.
+ * Supports days (d), hours (h), minutes (m), seconds (s).
+ * @param expiresAt - e.g. "7d", "12h", "30m"
+ * @returns number - duration in milliseconds
+ */
+export const getMaxAgeFromExpiresAt = (expiresAt: string): number => {
+  const match = expiresAt.match(/^(\d+)([dhms])$/i);
+  if (!match) throw new Error(`Invalid expiresAt format: ${expiresAt}`);
+
+  const value = parseInt(match[1], 10);
+  const unit = match[2].toLowerCase();
+
+  const multipliers: Record<string, number> = {
+    d: 24 * 60 * 60 * 1000,
+    h: 60 * 60 * 1000,
+    m: 60 * 1000,
+    s: 1000,
+  };
+
+  return value * multipliers[unit];
+}
+
 

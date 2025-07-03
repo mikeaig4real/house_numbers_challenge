@@ -1,13 +1,14 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
+import { AuthRequest, User } from '../../types';
+import { config } from "../../config";
 
-const JWT_SECRET = process.env.JWT_SECRET || 'something_complex';
 
-export function jwtAuth(req: Request, res: Response, next: NextFunction) {
-  const token = req.cookies?.snipify_token || req.headers.authorization?.split(' ')[1];
+export function jwtAuth(req: AuthRequest, res: Response, next: NextFunction) {
+  const token = req.cookies?.[config.jwt.cookieName] || req.headers.authorization?.split(' ')[1];
   if (!token) return next();
   try {
-    const decoded = jwt.verify(token, JWT_SECRET);
+    const decoded = jwt.verify(token, config.jwt.secret) as Partial<User>;
     req.user = decoded;
   } catch (error) {
     console.error('JWT verification failed:', error);

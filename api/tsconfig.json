@@ -9,6 +9,6 @@
     "types": ["vitest", "node"],
     "typeRoots": ["./types", "./node_modules/@types"]
   },
-  "include": ["src", "tests"],
+  "include": ["src", "tests", "config"],
   "exclude": ["node_modules", "dist"]
 }

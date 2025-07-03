@@ -1,10 +1,7 @@
 import mongoose, { Schema, Document, Types } from 'mongoose';
+import { Snippet as SnippetType } from '../../types';
 
-export interface ISnippet extends Document {
-  text: string;
-  summary: string;
-  createdAt: Date;
-  updatedAt: Date;
+export interface ISnippet extends SnippetType, Document {
   user: Types.ObjectId;
 }
 
@@ -24,7 +21,7 @@ const SnippetSchema = new Schema<ISnippet>(
           `Summary must be ${SUMMARY_COUNT} words or fewer, but got ${props.value.trim().split(/\s+/).length}.`,
       },
     },
-    user: { type: Schema.Types.ObjectId, ref: 'User', required: true }, // Add user field
+    user: { type: Schema.Types.ObjectId, ref: 'User', required: true },
   },
   { timestamps: true },
 );

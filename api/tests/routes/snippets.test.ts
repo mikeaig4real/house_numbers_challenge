@@ -8,7 +8,7 @@ import { makeLongText, summarizeTextFake, countWords, sleep } from '../../src/ut
 import * as summarizeService from '../../src/services/summarize';
 import { connectDB, disconnectDB } from '../../src/db/connect';
 import { Snippet } from '../../src/models/snippet';
-import User from '../../src/models/user';
+import { User } from '../../src/models/user';
 
 const wordLimit = process.env.SUMMARY_WORD_LIMIT ? parseInt(process.env.SUMMARY_WORD_LIMIT) : 30;
 const testUser = { email: 'snippetuser@example.com', password: 'TestPass123!' };
