@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 dotenv.config();
+import { config } from '../../config';
 let isConnected = false;
 
 /**
@@ -11,7 +12,7 @@ export async function connectDB(test:boolean=false): Promise<typeof mongoose> {
   if (isConnected) {
     return mongoose;
   }
-  const uri = test ? process.env.MONGO_TEST_URI : process.env.MONGO_URI;
+  const uri = test ? config.mongoTestUri : config.mongoUri;
   if (!uri) {
     throw new Error('MONGO_URI is not defined in environment variables');
   }

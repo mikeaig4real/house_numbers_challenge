@@ -3,10 +3,11 @@ import { Server, Socket } from 'socket.io';
 import { countWords } from '../utils';
 import { summarizeContentStream } from '../services/summarize';
 import { Snippet } from '../models/snippet';
+import { config } from "../../config";
 import EVENTS from '../constants/events';
 
-const wordLimit = process.env.SUMMARY_WORD_LIMIT ? parseInt(process.env.SUMMARY_WORD_LIMIT) : 30;
-const wordDelta = process.env.SUMMARY_WORD_DELTA ? parseInt(process.env.SUMMARY_WORD_DELTA) : 5;
+const wordLimit = config.wordLimit;
+const wordDelta = config.wordDelta;
 
 export const getSummary = (app: Express, io: Server, socket: Socket) => {
   return async (

@@ -8,6 +8,7 @@ type Config = {
   env: string;
   port: string;
   mongoUri: string;
+  mongoTestUri: string;
   jwt: {
     secret: string;
     expiresIn: SignOptions['expiresIn'];
@@ -21,6 +22,7 @@ type Config = {
   };
   frontendUrl: string;
   geminiApiKey: string;
+  geminiModel: string;
   wordLimit: number;
   wordDelta: number;
 };
@@ -29,11 +31,13 @@ const requiredEnv = {
   NODE_ENV: process.env.NODE_ENV,
   PORT: process.env.BE_PORT,
   MONGO_URI: process.env.MONGO_URI,
+  MONGO_TEST_URI: process.env.MONGO_TEST_URI,
   JWT_SECRET: process.env.JWT_SECRET,
   JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN,
   JWT_COOKIE_NAME: process.env.JWT_COOKIE_NAME,
   FE_URL: process.env.FE_URL,
   GEMINI_API_KEY: process.env.GEMINI_API_KEY,
+  GEMINI_MODEL: process.env.GEMINI_MODEL ?? 'gemini-2.0-flash',
   SUMMARY_WORD_LIMIT: process.env.SUMMARY_WORD_LIMIT ?? '30',
   SUMMARY_WORD_DELTA: process.env.SUMMARY_WORD_DELTA ?? '5',
 };
@@ -49,6 +53,7 @@ const config: Config = Object.freeze({
   env: requiredEnv.NODE_ENV as string,
   port: requiredEnv.PORT as string,
   mongoUri: requiredEnv.MONGO_URI as string,
+  mongoTestUri: requiredEnv.MONGO_TEST_URI as string,
   jwt: {
     secret: requiredEnv.JWT_SECRET as string,
     expiresIn: requiredEnv.JWT_EXPIRES_IN as SignOptions['expiresIn'],
@@ -62,6 +67,7 @@ const config: Config = Object.freeze({
   },
   frontendUrl: requiredEnv.FE_URL as string,
   geminiApiKey: requiredEnv.GEMINI_API_KEY as string,
+  geminiModel: requiredEnv.GEMINI_MODEL as string,
   wordLimit: +requiredEnv.SUMMARY_WORD_LIMIT!,
   wordDelta: +requiredEnv.SUMMARY_WORD_DELTA!,
 });

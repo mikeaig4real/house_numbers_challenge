@@ -1,8 +1,10 @@
 import dotenv from 'dotenv';
 dotenv.config();
 import { GoogleGenerativeAI, EnhancedGenerateContentResponse } from '@google/generative-ai';
+import { config } from "../../config";
 
-const { GEMINI_API_KEY, GEMINI_MODEL } = process.env;
+const GEMINI_API_KEY = config.geminiApiKey;
+const GEMINI_MODEL = config.geminiModel;
 
 
 // Google Generative AI model configuration and Recommended functions from sdk documentation/template
