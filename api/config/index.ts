@@ -1,5 +1,4 @@
 import dotenv from 'dotenv';
-import { getMaxAgeFromExpiresAt } from '../src/utils';
 import { SignOptions } from 'jsonwebtoken';
 
 dotenv.config();
@@ -47,6 +46,29 @@ if (missing.length > 0) {
   throw new Error(
     `Missing required environment variable(s):\n${missing.map(([key]) => `- ${key}`).join('\n')}`,
   );
+}
+
+/**
+ * Converts a human-readable expiration string like "7d", "12h", "30m" into milliseconds.
+ * Supports days (d), hours (h), minutes (m), seconds (s).
+ * @param expiresAt - e.g. "7d", "12h", "30m"
+ * @returns number - duration in milliseconds
+ */
+export const getMaxAgeFromExpiresAt = (expiresAt: string): number => {
+  const match = expiresAt.match(/^(\d+)([dhms])$/i);
+  if (!match) throw new Error(`Invalid expiresAt format: ${expiresAt}`);
+
+  const value = parseInt(match[1], 10);
+  const unit = match[2].toLowerCase();
+
+  const multipliers: Record<string, number> = {
+    d: 24 * 60 * 60 * 1000,
+    h: 60 * 60 * 1000,
+    m: 60 * 1000,
+    s: 1000,
+  };
+
+  return value * multipliers[unit];
 }
 
 const config: Config = Object.freeze({

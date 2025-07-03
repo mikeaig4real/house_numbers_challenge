@@ -1,8 +1,10 @@
 import dotenv from 'dotenv';
 dotenv.config();
 import { GoogleGenerativeAI, EnhancedGenerateContentResponse } from '@google/generative-ai';
+import { config } from "../../config";
 
-const { GEMINI_API_KEY, GEMINI_MODEL } = process.env;
+const GEMINI_API_KEY = config.geminiApiKey;
+const GEMINI_MODEL = config.geminiModel;
 
 
 // Google Generative AI model configuration and Recommended functions from sdk documentation/template
@@ -88,28 +90,5 @@ export function countWords ( text: string ): number
 }
 
 export const sleep = ( time: number ) => new Promise( ( resolve ) => setTimeout( resolve, time ) );
-
-/**
- * Converts a human-readable expiration string like "7d", "12h", "30m" into milliseconds.
- * Supports days (d), hours (h), minutes (m), seconds (s).
- * @param expiresAt - e.g. "7d", "12h", "30m"
- * @returns number - duration in milliseconds
- */
-export const getMaxAgeFromExpiresAt = (expiresAt: string): number => {
-  const match = expiresAt.match(/^(\d+)([dhms])$/i);
-  if (!match) throw new Error(`Invalid expiresAt format: ${expiresAt}`);
-
-  const value = parseInt(match[1], 10);
-  const unit = match[2].toLowerCase();
-
-  const multipliers: Record<string, number> = {
-    d: 24 * 60 * 60 * 1000,
-    h: 60 * 60 * 1000,
-    m: 60 * 1000,
-    s: 1000,
-  };
-
-  return value * multipliers[unit];
-}
 
 

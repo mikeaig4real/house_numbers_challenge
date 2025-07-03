@@ -3,8 +3,8 @@ import {
   makeLongText,
   summarizeTextFake,
   countWords,
-  getMaxAgeFromExpiresAt,
 } from '../../src/utils';
+import { getMaxAgeFromExpiresAt } from "../../config";
 
 describe('makeLongText', () => {
   it('returns a string with the specified number of words', () => {
