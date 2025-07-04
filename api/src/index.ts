@@ -5,47 +5,64 @@ import { connectDB } from './db/connect';
 import snippetsRouter from './routes/snippets';
 import authRouter from './routes/auth';
 import sseRouter from './routes/sse';
-import { jwtAuth } from './middleware/jwtAuth';
+import { jwtAuthSocket } from './middleware/jwtAuthSocket';
+import { notFound } from './middleware/notFound';
+import { errorHandler } from './middleware/errorHandler';
+import { handleSocket } from "./socket";
+import { createServer } from 'http';
+import { Server } from 'socket.io';
 import cookieParser from 'cookie-parser';
-
-declare global {
-  namespace Express {
-    interface Request {
-      user?: any;
-    }
-  }
-}
+import { config } from "../config";
 
 const app = express();
+const httpServer = createServer(app);
+const io = new Server(httpServer, {
+  cors: {
+    origin: config.frontendUrl,
+    credentials: true,
+  },
+});
+
 app.use(express.json());
 app.use(cookieParser());
 
-
-const FE_URL = process.env.FE_URL || 'http://localhost:3030';
 app.use(
   cors({
-    origin: FE_URL,
+    origin: config.frontendUrl,
+    methods: ['GET', 'POST'],
     credentials: true,
   }),
 );
 
 
-app.use('/api/snippets', jwtAuth);
 app.use('/api/snippets', snippetsRouter);
 app.use('/api/auth', authRouter);
 app.use('/api/sse', sseRouter);
 
 app.get('/', (req, res) => {
   res.send('Welcome to Snipify API!');
-});
+} );
+
+app.use(notFound);
+app.use(errorHandler);
+io.use(jwtAuthSocket);
 
 const startApp = async () => {
   try {
     await connectDB();
-    console.log('Connected to MongoDB');
-    const PORT = process.env.BE_PORT ? +process.env.BE_PORT : 3000;
-    app.listen(PORT, () => {
-      console.log(`Snipify API running on port ${PORT}`);
+    console.log( 'Connected to MongoDB' );
+    io.on('connection', (socket) => {
+      console.log( "A user connected" );
+      const user = socket?.user
+      if ( user )
+      {
+        console.log(`User ${user.id} connected`)
+        socket.join( user.id );
+        handleSocket(app, io, socket);
+      };
+    });
+    httpServer.listen(+config.port, '0.0.0.0', () => {
+      console.log(`Snipify API running on port ${config.port}`);
     });
   } catch (error) {
     console.error('Error connecting to MongoDB:', error);
@@ -58,4 +75,4 @@ if (process.env.NODE_ENV !== 'test') {
 }
 
 export default app;
-export { app };
+export { app, io };

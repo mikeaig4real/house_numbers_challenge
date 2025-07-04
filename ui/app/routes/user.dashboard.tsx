@@ -7,70 +7,128 @@ import SnippetModal from '../components/SnippetModal';
 import FloatingPlusButton from '../components/FloatingPlusButton';
 import CreateSnippetModal from '../components/CreateSnippetModal';
 import Loader from '../components/Loader';
-
-interface Snippet {
-  id: string;
-  summary: string;
-  text: string;
-}
+import { SnippetAPI } from '../api';
+import { AxiosError } from 'axios';
+import { SnippetType } from '../types';
+import Error from '../components/Error';
+import { socket, connectSocket } from '../utils/socket';
+import EVENTS from '../constants/events';
 
 export default function UserDashboard() {
   const { user, logout } = useAuth();
-  const [snippets, setSnippets] = useState<Snippet[]>([]);
-  const [selected, setSelected] = useState<Snippet | null>(null);
+  const [snippets, setSnippets] = useState<SnippetType.Snippet[]>([]);
+  const [selected, setSelected] = useState<SnippetType.Snippet | null>(null);
+  const [streamSelected, setStreamSelected] = useState<SnippetType.Snippet | null>(null);
   const [showCreate, setShowCreate] = useState(false);
   const [newText, setNewText] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [useSSE, setUseSSE] = useState(false);
+  const [loading, setLoading] = useState({ state: false, message: '' });
+  const [error, setError] = useState<string>('');
+  const [useStreaming, setUseStreaming] = useState(false);
 
-  useEffect(() => {
-    fetch('http://localhost:3000/api/snippets', { credentials: 'include' })
-      .then((res) => res.json())
-      .then((data) => setSnippets(data || []));
-  }, []);
+  const getSnippets = async () => {
+    setLoading({ state: true, message: 'Loading snippets...' });
+    setError('');
+    try {
+      const data = await SnippetAPI.getSnippets();
+      setSnippets(data);
+    } catch ( e )
+    {
+      console.log('Error loading snippets:', e);
+      const axiosError = e as AxiosError;
+      setError(axiosError.message || 'Loading Snippets failed');
+    } finally {
+      setLoading({ state: false, message: '' });
+    }
+  };
 
   async function handleCreateSnippet() {
-    setLoading(true);
-    setError(null);
+    if (!newText.trim()) {
+      setError('Snippet text cannot be empty');
+      return;
+    }
+    setLoading({ state: true, message: 'Creating snippet...' });
+    setError('');
+    setStreamSelected(null);
+    setSelected(null);
     try {
-      const res = await fetch('http://localhost:3000/api/snippets', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({ text: newText }),
-      });
-      if (!res.ok) throw new Error('Failed to create snippet');
-      const data = await res.json();
-      // optimistically update the UI
-      setSnippets((s) => [data, ...s]);
-      setSelected(data);
+      if (!useStreaming) {
+        const data = await SnippetAPI.createSnippet(newText);
+        setSnippets((s) => [data, ...s]);
+        setSelected(data);
+      } else {
+        socket.emit(
+          EVENTS.GET_SUMMARY,
+          { text: newText },
+          ({
+            data,
+            error,
+            message,
+          }: {
+            data: SnippetType.Snippet;
+            error: boolean;
+            message: string;
+          }) => {
+            if (error) {
+              console.error('Error creating snippet:', message);
+              setError(message);
+              return;
+            }
+            setStreamSelected((prev) => {
+              return { ...prev, ...data };
+            });
+            setSnippets((s) => [data, ...s]);
+          },
+        );
+      }
       setShowCreate(false);
       setNewText('');
-    } catch (e: unknown) {
-      if (e instanceof Error) {
-        setError(e.message);
-      } else {
-        setError('An unknown error occurred');
-      }
+    } catch ( e )
+    {
+      console.log('Error creating snippet:', e);
+      const axiosError = e as AxiosError;
+      setError(axiosError.message || 'Creating Snippet failed');
     } finally {
-      setLoading(false);
+      setLoading({ state: false, message: '' });
     }
   }
+  const onSendSummary = ( { data }: { data: { text: string; summary: string; }; } ) =>
+  {
+    setStreamSelected((prev) =>
+      prev
+        ? { ...prev, summary: prev.summary + data.summary }
+        : { id: 'streaming', text: data.text, summary: data.summary }
+    );
+  };
+  useEffect(() => {
+    getSnippets();
+    connectSocket();
+    socket.on(EVENTS.SEND_SUMMARY, onSendSummary);
+    return () => {
+      socket.off(EVENTS.SEND_SUMMARY, onSendSummary);
+    };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div className="min-h-screen w-full flex flex-col bg-[#1a0025]">
       <DashboardNav
         userEmail={user?.email}
         onLogout={logout}
-        useSSE={useSSE}
-        setUseSSE={setUseSSE}
+        useStreaming={useStreaming}
+        setUseStreaming={setUseStreaming}
       />
       <div className="flex flex-1 overflow-hidden">
         <SnippetList snippets={snippets} selectedId={selected?.id || null} onSelect={setSelected} />
         <AnimatePresence>
-          {selected && (
-            <SnippetModal snippet={selected} onClose={() => setSelected(null)} useSSE={useSSE} />
+          {(streamSelected || selected) && (
+            <SnippetModal
+              snippet={(streamSelected || selected)!}
+              onClose={ () =>
+              {
+                if (selected) setSelected( null );
+                if (streamSelected) setStreamSelected( null );
+              }}
+            />
           )}
         </AnimatePresence>
         <FloatingPlusButton onClick={() => setShowCreate(true)} />
@@ -80,13 +138,13 @@ export default function UserDashboard() {
             onClose={() => setShowCreate(false)}
             onCreate={handleCreateSnippet}
             loading={loading}
-            error={error}
             newText={newText}
             setNewText={setNewText}
           />
         </AnimatePresence>
-        <Loader loading={loading} />
+        <Loader state={loading.state} message={loading.message} />
       </div>
+      <Error message={error} />
     </div>
   );
 }

@@ -7,7 +7,7 @@ export default function User() {
   const navigate = useNavigate();
   useEffect(() => {
     if (!user) {
-      navigate('/auth/signin', { replace: true });
+      navigate('/auth/sign_in', { replace: true });
     }
   }, [navigate, user]);
   if (!user) return null;

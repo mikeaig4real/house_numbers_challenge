@@ -5,15 +5,13 @@ export default function CreateSnippetModal({
   onClose,
   onCreate,
   loading,
-  error,
   newText,
   setNewText,
 }: {
   show: boolean;
   onClose: () => void;
   onCreate: () => void;
-  loading: boolean;
-  error: string | null;
+  loading: {state: boolean, message: string};
   newText: string;
   setNewText: (t: string) => void;
 }) {
@@ -50,13 +48,12 @@ export default function CreateSnippetModal({
           onChange={(e) => setNewText(e.target.value)}
           placeholder="Paste or type your text here..."
         />
-        {error && <div className="text-red-400 mb-2">{error}</div>}
         <button
           className="w-full py-3 rounded bg-purple-700 hover:bg-purple-600 text-white font-semibold shadow-lg transition-colors"
           onClick={onCreate}
-          disabled={loading || !newText.trim()}
+          disabled={loading.state || !newText.trim()}
         >
-          {loading ? 'Creating...' : 'Make Snippet'}
+          {loading.state ? loading.message : 'Make Snippet'}
         </button>
       </motion.div>
     </motion.div>

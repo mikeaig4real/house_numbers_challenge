@@ -1,14 +1,10 @@
 import mongoose, { Schema, Document, Types } from 'mongoose';
+import { Snippet as SnippetType } from '../../types';
+import { config } from "../../config";
 
-export interface ISnippet extends Document {
-  text: string;
-  summary: string;
-  createdAt: Date;
-  updatedAt: Date;
+export interface ISnippet extends SnippetType, Document {
   user: Types.ObjectId;
 }
-
-const SUMMARY_COUNT = Number(process.env.SUMMARY_COUNT) || 30;
 
 const SnippetSchema = new Schema<ISnippet>(
   {
@@ -18,13 +14,13 @@ const SnippetSchema = new Schema<ISnippet>(
       required: true,
       validate: {
         validator: function (v: string) {
-          return v.trim().split(/\s+/).length <= SUMMARY_COUNT;
+          return v.trim().split(/\s+/).length <= config.wordLimit;
         },
         message: (props: any) =>
-          `Summary must be ${SUMMARY_COUNT} words or fewer, but got ${props.value.trim().split(/\s+/).length}.`,
+          `Summary must be ${config.wordLimit} words or fewer, but got ${props.value.trim().split(/\s+/).length}.`,
       },
     },
-    user: { type: Schema.Types.ObjectId, ref: 'User', required: true }, // Add user field
+    user: { type: Schema.Types.ObjectId, ref: 'User', required: true },
   },
   { timestamps: true },
 );

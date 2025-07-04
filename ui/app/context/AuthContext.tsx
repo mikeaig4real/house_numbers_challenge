@@ -1,14 +1,11 @@
 import { useNavigate } from "@remix-run/react";
 import { createContext, useContext, useState, useEffect } from 'react';
-
-export interface AuthUser {
-  id: string;
-  email: string;
-}
+import { UserType } from "../types";
+import { AuthAPI } from "../api";
 
 interface AuthContextType {
-  user: AuthUser | null;
-  setUser: (user: AuthUser | null) => void;
+  user: UserType.User | null;
+  setUser: (user: UserType.User | null) => void;
   logout: () => Promise<void>;
 }
 
@@ -16,7 +13,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 const USER_KEY = 'snipify_user';
 
-function persistUser(user: AuthUser | null) {
+function persistUser(user: UserType.User | null) {
   if (user) {
     localStorage.setItem(USER_KEY, JSON.stringify(user));
   } else {
@@ -25,11 +22,10 @@ function persistUser(user: AuthUser | null) {
 }
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [ user, setUserState ] = useState<AuthUser | null>( null );
+  const [ user, setUserState ] = useState<UserType.User | null>( null );
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Load user from localStorage on mount
     const stored = localStorage.getItem( USER_KEY );
     if (stored) {
       try {
@@ -42,18 +38,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, [navigate]);
 
-  const setUser = (user: AuthUser | null) => {
+  const setUser = (user: UserType.User | null) => {
     setUserState(user);
     persistUser(user);
   };
 
   const logout = async () => {
-    await fetch('http://localhost:3000/api/auth/logout', {
-      method: 'POST',
-      credentials: 'include',
-    });
+    await AuthAPI.logout();
     setUser( null );
-    navigate('/auth/login');
+    navigate('/auth/signin', { replace: true });
   };
 
   return <AuthContext.Provider value={{ user, setUser, logout }}>{children}</AuthContext.Provider>;

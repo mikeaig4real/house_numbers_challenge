@@ -51,6 +51,32 @@ docker compose up --build
 cd api && npm test
 ```
 
+## Available Commands
+  
+### Root
+
+- `npm run dev` — Start all services with Docker Compose (API, UI, MongoDB)
+- `npm run start:manual` — Start API and UI dev servers manually (without Docker)
+
+### API (`api`)
+
+- `npm run start` — Build and run the API (production)
+- `npm run dev` — Start API in development mode with hot reload
+- `npm run test` — Run backend tests
+- `npm run lint` — Lint code (currently a placeholder)
+- `npm run format` — Format code with Prettier
+- `npm run build` — Compile TypeScript
+
+### UI (`ui`)
+
+- `npm run build` — Build the Remix app
+- `npm run dev` — Start Remix dev server
+- `npm run lint` — Lint frontend code with ESLint
+- `npm run start` — Start the built Remix app (production)
+- `npm run typecheck` — Type-check with TypeScript
+- `npm run format` — Format code with Prettier
+- `npm run test` — Run frontend tests
+
 ---
 
 ## Authentication (Session-based, JWT, HttpOnly Cookie)
@@ -226,41 +252,16 @@ curl http://localhost:3000/api/snippets/<id> --cookie "snipify_token=..."
 ## AI Key Management
 
 - Place your Gemini API key in the `.env` file of `/api` as `GEMINI_API_KEY`.
-  
-  ## Available Commands
-  
-  ### Root
-  
-  - `npm run dev` — Start all services with Docker Compose (API, UI, MongoDB)
-  - `npm run start:manual` — Start API and UI dev servers manually (without Docker)
-  
-  ### API (`api`)
-  
-  - `npm run start` — Build and run the API (production)
-  - `npm run dev` — Start API in development mode with hot reload
-  - `npm run test` — Run backend tests
-  - `npm run lint` — Lint code (currently a placeholder)
-  - `npm run format` — Format code with Prettier
-  - `npm run build` — Compile TypeScript
-  
-  ### UI (`ui`)
-  
-  - `npm run build` — Build the Remix app
-  - `npm run dev` — Start Remix dev server
-  - `npm run lint` — Lint frontend code with ESLint
-  - `npm run start` — Start the built Remix app (production)
-  - `npm run typecheck` — Type-check with TypeScript
-  - `npm run format` — Format code with Prettier
-  - `npm run test` — Run frontend tests
 
 ## Reflection
 
 _What I’d improve with more time:_
 
-- Probably implement the event with socket.io for real-time updates since i could'nt make SSE work yet
 - Add more client-side tests
-- Use axios for API calls in the frontend for better error handling and response management
+- Maybe implement a custom validation logic within controllers with an iterative pattern within controllers.
+- Utilize error middleware by calling next with error when needed.
 
 _Trade-offs made:_
 
 - Focused on a backend-first approach, Remix offers both server and client capabilities, would have maybe reduced round trips of client-server requests.
+- Sacrificed code quality for speed and breadth of implementation.

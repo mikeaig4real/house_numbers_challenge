@@ -1,6 +1,8 @@
 import { Link, useNavigate } from '@remix-run/react';
 import { useAuth } from '../context/AuthContext';
 import { useState } from 'react';
+import { AuthAPI } from '../api';
+import { AxiosError } from "axios";
 
 export default function SignIn() {
   const { setUser } = useAuth();
@@ -13,23 +15,14 @@ export default function SignIn() {
     const form = e.currentTarget;
     const email = (form.elements.namedItem('email') as HTMLInputElement).value;
     const password = (form.elements.namedItem('password') as HTMLInputElement).value;
-    try {
-      const res = await fetch('http://localhost:3000/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({ email, password }),
-      });
-      if (!res.ok) {
-        const data = await res.json();
-        setError(data.error || 'Sign in failed');
-        return;
-      }
-      const data = await res.json();
+    try
+    {
+      const data = await AuthAPI.signIn(email, password);
       setUser({ id: data.id, email: data.email });
       navigate('/user/dashboard');
     } catch (err) {
-      setError('Sign in failed');
+      const axiosError = err as AxiosError;
+      setError(axiosError.message || 'Sign in failed');
     }
   }
 
