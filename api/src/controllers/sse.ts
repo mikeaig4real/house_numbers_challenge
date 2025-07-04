@@ -10,23 +10,11 @@ export const streamBySSE = async (req: AuthRequest, res: Response): Promise<void
   res.setHeader('Cache-Control', 'no-cache');
   res.setHeader('Connection', 'keep-alive');
   res.flushHeaders();
-
-  const { text } = req.params;
-
-  if (!text || typeof text !== 'string' || text.trim().length === 0) {
-    res.status(404).end('Invalid or empty text provided.');
-    return;
-  }
-
-  const trimmedText = text.trim();
-  const wordCount = countWords(trimmedText);
-
-  if (wordCount < config.wordDelta) {
-    res.status(400).end(`Text must contain at least ${config.wordDelta} words.`);
-    return;
-  }
-
+  
   try {
+    const { text } = req.params;
+    const trimmedText = text.trim();
+    const wordCount = countWords(trimmedText);
     const normalizedLimit = Math.min(config.wordLimit, wordCount);
     const { text: summary, error } = await summarizeContentStream(
       (chunk) => {
