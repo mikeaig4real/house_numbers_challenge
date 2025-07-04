@@ -1,6 +1,6 @@
-export interface Snippet {
+export interface Snippet
+{
+  id: string;
   text: string;
   summary: string;
-  createdAt: Date;
-  updatedAt: Date;
 }

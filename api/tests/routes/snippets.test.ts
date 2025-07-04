@@ -203,7 +203,8 @@ describe('Snippets API', () => {
     it('GET /api/snippets/:id returns 404 for non-existent snippet', async () => {
       const res = await request(app)
         .get('/api/snippets/64b7e7e7e7e7e7e7e7e7e7e7')
-        .set('Cookie', cookie);
+        .set( 'Cookie', cookie );
+      console.log(res.body)
       expect(res.status).toBe(404);
     });
   });

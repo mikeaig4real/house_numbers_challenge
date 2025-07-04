@@ -4,6 +4,8 @@ import jwt from 'jsonwebtoken';
 import { User } from '../models/user';
 import { config } from '../../config';
 import { BadRequestError } from "../errors/badRequestError";
+import { CustomResponse } from "../responses/customResponse";
+import {  User as UserType } from "../../types";
 
 export const signUp = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
@@ -18,7 +20,7 @@ export const signUp = async (req: Request, res: Response, next: NextFunction): P
       expiresIn: config.jwt.expiresIn,
     });
     res.cookie(config.jwt.cookieName, token, config.jwt.cookieOptions);
-    res.status(201).json({ id: user._id, email: user.email });
+    CustomResponse.created<Partial<UserType>>(res, { id: user.id, email: user.email });
   } catch ( e )
   {
     console.error('Signup error:', e);
@@ -41,7 +43,7 @@ export const login = async (req: Request, res: Response, next: NextFunction): Pr
       expiresIn: config.jwt.expiresIn,
     });
     res.cookie(config.jwt.cookieName, token, config.jwt.cookieOptions);
-    res.status(200).json({ id: user._id, email: user.email });
+    CustomResponse.success<Partial<UserType>>(res, { id: user.id, email: user.email });
   } catch (e) {
     next(e);
   }
