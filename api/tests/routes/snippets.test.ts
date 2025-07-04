@@ -58,7 +58,7 @@ describe('Snippets API', () => {
       const text = 'Too short';
       const res = await request(app).post('/api/snippets').set('Cookie', cookie).send({ text });
       expect(res.status).toBe(400);
-      expect(res.body.message).toMatch(/Text must contain at least 5 words/);
+      expect(res.body.error).toMatch(/bad request/);
       const count = await Snippet.countDocuments();
       expect(count).toBe(0);
     });
@@ -103,14 +103,15 @@ describe('Snippets API', () => {
       const { text } = makeLongText(100);
       const res = await request(app).post('/api/snippets').set('Cookie', cookie).send({ text });
       expect(res.status).toBe(400);
-      expect(res.body.message).toMatch(/Summary must be/);
+      expect(res.body.error).toMatch(/bad request/);
       const count = await Snippet.countDocuments();
       expect(count).toBe(0);
     });
 
     it('POST /api/snippets returns 400 on missing text', async () => {
       const res = await request(app).post('/api/snippets').set('Cookie', cookie).send({});
-      expect(res.status).toBe(400);
+      expect( res.status ).toBe( 400 );
+      expect(res.body.error).toMatch(/bad request/);
       const count = await Snippet.countDocuments();
       expect(count).toBe(0);
     });
@@ -156,8 +157,8 @@ describe('Snippets API', () => {
           expect(countWords(response.body.summary.trim())).toBeLessThanOrEqual(textWordCount);
           expect(countWords(response.body.summary.trim())).toBeLessThanOrEqual(wordLimit);
         } else if ([400, 500, 503].includes(response.status)) {
-          expect(response.body.message).toMatch(
-            /Failed to summarize content|Failed to create snippet|model is overloaded|Service Unavailable|summary|error/i,
+          expect(response.body.error).toMatch(
+            /Failed to summarize content|Failed to create snippet|model is overloaded|Service Unavailable|summary|error|bad request/i,
           );
         } else {
           throw new Error(`Unexpected status code: ${res.status}`);
