@@ -257,10 +257,10 @@ curl http://localhost:3000/api/snippets/<id> --cookie "snipify_token=..."
 
 _What I’d improve with more time:_
 
-- Probably implement the event with socket.io for real-time updates since i could'nt make SSE work yet
 - Add more client-side tests
-- Use axios for API calls in the frontend for better error handling and response management
+- Use libraries like Zod to implement schema validation for API requests at Request level with middlewares, maybe implement a custom validation logic with an iterative pattern within controllers.
 
 _Trade-offs made:_
 
 - Focused on a backend-first approach, Remix offers both server and client capabilities, would have maybe reduced round trips of client-server requests.
+- Sacrificed code quality for speed and breadth of implementation.
