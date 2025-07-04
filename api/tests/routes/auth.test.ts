@@ -17,7 +17,19 @@ afterAll(async () => {
   await disconnectDB();
 });
 
-describe('Auth API', () => {
+describe( 'Auth API', () =>
+{
+
+  it('should give bad request on missing/invalid credentials on signup', async () => {
+    const res = await request(app).post('/api/auth/signup').send({ email: '', password: '' }).expect(400);
+    expect(res.body.error).toMatch(/validation failed/i);
+  });
+
+  it('should give bad request on missing/invalid credentials on login', async () => {
+    const res = await request(app).post('/api/auth/login').send({ email: '', password: '' }).expect(400);
+    expect(res.body.error).toMatch(/validation failed/i);
+  });
+
   it('should sign up a new user and set a cookie', async () => {
     const res = await request(app).post('/api/auth/signup').send(testUser).expect(201);
     expect(res.body.email).toBe(testUser.email);

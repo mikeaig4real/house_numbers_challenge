@@ -5,12 +5,8 @@ import { User } from '../models/user';
 import { config } from '../../config';
 
 export const signUp = async (req: Request, res: Response): Promise<void> => {
-  const { email, password } = req.body;
-  if (!email || !password) {
-    res.status(400).json({ error: 'Email and password required.' });
-    return;
-  }
   try {
+    const { email, password } = req.body;
     const existing = await User.findOne({ email });
     if (existing) {
       res.status(400).json({ error: 'Email already registered.' });
@@ -29,12 +25,8 @@ export const signUp = async (req: Request, res: Response): Promise<void> => {
 };
 
 export const login = async (req: Request, res: Response): Promise<void> => {
-  const { email, password } = req.body;
-  if (!email || !password) {
-    res.status(400).json({ error: 'Email and password required.' });
-    return;
-  }
   try {
+    const { email, password } = req.body;
     const user = await User.findOne({ email });
     if (!user) {
       res.status(400).json({ error: 'Invalid credentials.' });
