@@ -2,7 +2,7 @@ import { z } from 'zod';
 import { config } from '../../config';
 import { countWords } from "../utils";
 
-const textValidator = z.object({
+export const textValidator = z.object({
   text: z
     .string()
     .trim()
