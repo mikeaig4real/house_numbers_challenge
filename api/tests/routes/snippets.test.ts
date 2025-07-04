@@ -58,7 +58,7 @@ describe('Snippets API', () => {
       const text = 'Too short';
       const res = await request(app).post('/api/snippets').set('Cookie', cookie).send({ text });
       expect(res.status).toBe(400);
-      expect(res.body.error).toMatch(/validation failed/);
+      expect(res.body.error).toMatch(/validation failed/i);
       const count = await Snippet.countDocuments();
       expect(count).toBe(0);
     });
@@ -103,7 +103,7 @@ describe('Snippets API', () => {
       const { text } = makeLongText(100);
       const res = await request(app).post('/api/snippets').set('Cookie', cookie).send({ text });
       expect(res.status).toBe(400);
-      expect(res.body.error).toMatch(/bad request/);
+      expect(res.body.error).toMatch(/bad request/i);
       const count = await Snippet.countDocuments();
       expect(count).toBe(0);
     });
@@ -111,7 +111,7 @@ describe('Snippets API', () => {
     it('POST /api/snippets returns 400 on missing text', async () => {
       const res = await request(app).post('/api/snippets').set('Cookie', cookie).send({});
       expect( res.status ).toBe( 400 );
-      expect(res.body.error).toMatch(/validation failed/);
+      expect(res.body.error).toMatch(/validation failed/i);
       const count = await Snippet.countDocuments();
       expect(count).toBe(0);
     });
