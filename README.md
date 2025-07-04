@@ -259,6 +259,7 @@ _What I’d improve with more time:_
 
 - Add more client-side tests
 - Use libraries like Zod to implement schema validation for API requests at Request level with middlewares, maybe implement a custom validation logic with an iterative pattern within controllers.
+- Utilize error middleware by calling next with error when needed.
 
 _Trade-offs made:_
 
