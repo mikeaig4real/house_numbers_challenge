@@ -2,15 +2,16 @@ import dotenv from 'dotenv';
 dotenv.config();
 import { config } from '../config';
 import { connectDB } from './db/connect';
-
-import server, { initSocket } from './server';
+import initApp from "./app";
+import initServer from "./server";
 
 const startApp = async () => {
   try {
     await connectDB();
-    initSocket();
+    const app = initApp();
+    const { httpServer, io } = initServer(app);
     console.log('Connected to MongoDB');
-    server.listen(+config.port, '0.0.0.0', () => {
+    httpServer.listen(+config.port, '0.0.0.0', () => {
       console.log(`Snipify API running on port ${config.port}`);
     });
   } catch (error) {

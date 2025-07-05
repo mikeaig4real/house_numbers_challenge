@@ -3,7 +3,8 @@ dotenv.config();
 import { connectDB, disconnectDB } from '../src/db/connect';
 import { beforeAll, afterAll } from "vitest";
 
-beforeAll(async () => {
+beforeAll( async () =>
+{
   await connectDB(true);
 });
 

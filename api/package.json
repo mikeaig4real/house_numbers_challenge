@@ -6,7 +6,7 @@
   "scripts": {
     "start": "tsc && node dist/index.js",
     "dev": "ts-node-dev src/index.ts",
-    "test": "vitest run --config tsconfig.test.json",
+    "test": "vitest run",
     "lint": "echo 'No ESLint config yet'",
     "format": "prettier --write \"src/**/*.ts\"",
     "build": "tsc"

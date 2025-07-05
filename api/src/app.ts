@@ -13,25 +13,28 @@ import { config } from '../config';
 
 const app = express();
 
+const initApp = () => {
+  app.use(express.json());
+  app.use(cookieParser());
+  app.use(
+    cors({
+      origin: config.frontendUrl,
+      methods: ['GET', 'POST'],
+      credentials: true,
+    }),
+  );
+  app.use('/api/snippets', snippetsRouter);
+  app.use('/api/auth', authRouter);
+  app.use('/api/sse', sseRouter);
 
-app.use(express.json());
-app.use(cookieParser());
-app.use(
-  cors({
-    origin: config.frontendUrl,
-    methods: ['GET', 'POST'],
-    credentials: true,
-  }),
-);
-app.use('/api/snippets', snippetsRouter);
-app.use('/api/auth', authRouter);
-app.use('/api/sse', sseRouter);
+  app.get('/', (req, res) => {
+    res.send('Welcome to Snipify API!');
+  });
 
-app.get('/', (req, res) => {
-  res.send('Welcome to Snipify API!');
-});
+  app.use(notFound);
+  app.use( errorHandler );
 
-app.use(notFound);
-app.use(errorHandler);
+  return app;
+};
 
-export default app;
+export default initApp;

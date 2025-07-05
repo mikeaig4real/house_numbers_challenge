@@ -1,8 +1,10 @@
 import request from 'supertest';
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
-import app from '../../src/app';
+import initApp from '../../src/app';
 import { User } from '../../src/models/user';
 import { config } from '../../config';
+
+const app = initApp();
 
 const testUser = { email: 'testuser@example.com', password: 'TestPass123!' };
 const COOKIE_NAME = config.jwt.cookieName;
