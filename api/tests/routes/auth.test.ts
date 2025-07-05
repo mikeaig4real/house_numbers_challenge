@@ -1,20 +1,17 @@
 import request from 'supertest';
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
-import app from '../../src/index';
+import app from '../../src/app';
 import { User } from '../../src/models/user';
-import { connectDB, disconnectDB } from '../../src/db/connect';
 import { config } from '../../config';
 
 const testUser = { email: 'testuser@example.com', password: 'TestPass123!' };
 const COOKIE_NAME = config.jwt.cookieName;
 
 beforeAll(async () => {
-  await connectDB(true);
   await User.deleteMany({ email: testUser.email });
 });
 afterAll(async () => {
   await User.deleteMany({ email: testUser.email });
-  await disconnectDB();
 });
 
 describe( 'Auth API', () =>

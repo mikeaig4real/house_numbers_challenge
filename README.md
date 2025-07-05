@@ -252,16 +252,3 @@ curl http://localhost:3000/api/snippets/<id> --cookie "snipify_token=..."
 ## AI Key Management
 
 - Place your Gemini API key in the `.env` file of `/api` as `GEMINI_API_KEY`.
-
-## Reflection
-
-_What I’d improve with more time:_
-
-- Add more client-side tests
-- Maybe implement a custom validation logic within controllers with an iterative pattern within controllers.
-- Utilize error middleware by calling next with error when needed.
-
-_Trade-offs made:_
-
-- Focused on a backend-first approach, Remix offers both server and client capabilities, would have maybe reduced round trips of client-server requests.
-- Sacrificed code quality for speed and breadth of implementation.

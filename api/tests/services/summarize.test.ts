@@ -1,4 +1,4 @@
-import { makeLongText, summarizeTextFake, countWords, sleep } from '../../src/utils';
+import { countWords, sleep } from '../../src/utils';
 import { expect, test, describe, it } from 'vitest';
 import { summarizeContent, summarizeContentStream } from '../../src/services/summarize';
 
