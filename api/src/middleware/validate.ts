@@ -3,9 +3,9 @@ import { Request, Response, NextFunction } from 'express';
 import { ValidationError } from '../errors/validationError';
 
 export const validate =
-  (schema: AnyZodObject) => (req: Request, res: Response, next: NextFunction) => {
+  (schema: AnyZodObject) => async (req: Request, res: Response, next: NextFunction) => {
     try {
-      schema.parse({
+      await schema.parseAsync({
         body: req.body,
         query: req.query,
         params: req.params,
@@ -13,8 +13,8 @@ export const validate =
       next();
     } catch (err) {
       if (err instanceof ZodError) {
-        return next(new ValidationError(err));
+        throw new ValidationError(err);
       }
-      next(err);
+      throw err;
     }
   };

@@ -4,12 +4,11 @@ import jwt from 'jsonwebtoken';
 import { config } from '../../config';
 import { AuthError } from "../errors/authError";
 
-export function requireAuth(req: AuthRequest, res: Response, next: NextFunction): void {
+export async function requireAuth(req: AuthRequest, res: Response, next: NextFunction) {
   const token = req.cookies?.[config.jwt.cookieName] || req.headers.authorization?.split(' ')[1];
 
   if (!token) {
-    next(new AuthError('Unauthorized: No token provided'));
-    return;
+    throw new AuthError('Unauthorized: No token provided');
   }
 
   try {
@@ -17,14 +16,12 @@ export function requireAuth(req: AuthRequest, res: Response, next: NextFunction)
     req.user = decoded;
   } catch (error) {
     console.error('JWT verification failed:', error); // possible issues from verifying the token (expired, invalid, etc.)
-    next(new AuthError('Unauthorized: Invalid token'));
-    return;
+    throw new AuthError('Unauthorized: Invalid token');
   }
 
   if (!req.user || !req.user.id) {
-    next(new AuthError('Unauthorized: Invalid user data'));
-    return;
-  }
+    throw new AuthError('Unauthorized: Invalid user data');
+  };
 
   next();
 }

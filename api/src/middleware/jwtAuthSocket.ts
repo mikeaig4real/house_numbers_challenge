@@ -10,7 +10,7 @@ export function jwtAuthSocket(socket: AuthSocket, next: (err?:Error) => void) {
     return;
   }
   const [cookieKey, token] = cookie.split( '=' );
-  if ( cookieKey !== config.jwt.cookieName || !token ) return next();
+  if ( cookieKey !== config.jwt.cookieName || !token ) return next(new AuthError('Invalid cookie format'));
   try {
     const decoded = jwt.verify(token, config.jwt.secret) as Partial<User>;
     socket.user = decoded;
