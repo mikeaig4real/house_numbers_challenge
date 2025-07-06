@@ -1,6 +1,6 @@
 import { Server as HttpServer } from 'http';
 import { Express } from 'express';
-import { jwtAuthSocket } from './middleware/jwtAuthSocket';
+import { requireAuth } from './middleware/requireAuthSocket';
 import { handleSocket } from './socket';
 import { Server as SocketServer } from 'socket.io';
 import { config } from '../config';
@@ -14,7 +14,7 @@ const initSocket = (server: HttpServer, app: Express) => {
     },
   });
 
-  io.use(jwtAuthSocket);
+  io.use(requireAuth);
 
   io.on('connection', (socket: AuthSocket) => {
     console.log('A user connected');
