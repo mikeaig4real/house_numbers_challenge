@@ -1,7 +1,11 @@
 import dotenv from 'dotenv';
+import jwt, { JsonWebTokenError } from 'jsonwebtoken';
 dotenv.config();
 import { GoogleGenerativeAI, EnhancedGenerateContentResponse } from '@google/generative-ai';
 import { config } from "../../config";
+import { AuthRequest, AuthSocket, User } from "../../types";
+import { error } from "console";
+import { AuthError } from "../errors/authError";
 
 const GEMINI_API_KEY = config.geminiApiKey;
 const GEMINI_MODEL = config.geminiModel;
@@ -90,5 +94,46 @@ export function countWords ( text: string ): number
 }
 
 export const sleep = ( time: number ) => new Promise( ( resolve ) => setTimeout( resolve, time ) );
+
+export const parseSocketToken = ( socket: AuthSocket ): undefined | string =>
+{
+  const cookie = socket.handshake.headers.cookie;
+  if ( !cookie ) return;
+  const [ cookieKey, token ] = cookie.split( '=' );
+  if ( cookieKey !== config.jwt.cookieName || !token ) return;
+  return token;
+};
+
+export const parseExpressToken = ( req: AuthRequest ): string | undefined =>
+{
+  return ( req.cookies?.[ config.jwt.cookieName ] || req.headers.authorization?.split( ' ' )[ 1 ] );
+}
+
+export function isSocket(context: any): context is AuthSocket {
+  return 'handshake' in context;
+}
+
+export const parseToken = (context: AuthSocket | AuthRequest): string | undefined => {
+  return isSocket(context) ? parseSocketToken(context) : parseExpressToken(context);
+};
+
+
+export const validateAndAttachUser = (context: AuthRequest | AuthSocket) => {
+  const token = parseToken(context);
+  if ( !token ) throw new AuthError('No token provided');
+
+  try {
+    const decoded = jwt.verify(token, config.jwt.secret) as Partial<User>;
+    context.user = decoded;
+  } catch ( err )
+  {
+    console.error('JWT verification failed:', error); // possible issues from verifying the token (expired, invalid, etc.)
+    throw new AuthError('Invalid token');
+  };
+
+  if (!context.user || !context.user.id) {
+    throw new AuthError('Invalid user data');
+  }
+};
 
 
