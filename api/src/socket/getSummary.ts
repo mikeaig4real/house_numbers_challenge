@@ -1,5 +1,6 @@
 import { Express } from 'express';
-import { Server, Socket } from 'socket.io';
+import { Server } from 'socket.io';
+import { AuthSocket } from '../../types';
 import { countWords } from '../utils';
 import { summarizeContentStream } from '../services/summarize';
 import { Snippet } from '../models/snippet';
@@ -9,7 +10,7 @@ import EVENTS from '../constants/events';
 const wordLimit = config.wordLimit;
 const wordDelta = config.wordDelta;
 
-export const getSummary = (app: Express, io: Server, socket: Socket) => {
+export const getSummary = (app: Express, io: Server, socket: AuthSocket) => {
   return async (
     {
       text,

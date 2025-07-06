@@ -14,7 +14,9 @@ export const textValidator = z.object({
       },
       { message: `Text must contain at least ${config.wordDelta} words.` },
     ),
-});
+} );
+
+export type TextDTO = z.infer<typeof textValidator>;
 
 export const createSnippetSchema = z.object( {
   body: textValidator,
@@ -26,6 +28,7 @@ export const getSnippetByIdSchema = z.object( {
   }),
 } );
 
+export type IdDTO = z.infer<typeof getSnippetByIdSchema>['params'];
 export const streamTextSchema = z.object({
   params: textValidator,
 });

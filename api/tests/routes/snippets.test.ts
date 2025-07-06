@@ -1,22 +1,20 @@
-import dotenv from 'dotenv';
-dotenv.config();
 import request from 'supertest';
 import type { Response } from 'supertest';
 import { describe, it, expect, beforeAll, afterAll, beforeEach, afterEach, vi } from 'vitest';
-import app from '../../src';
+import initApp from '../../src/app';
 import { makeLongText, summarizeTextFake, countWords, sleep } from '../../src/utils';
 import * as summarizeService from '../../src/services/summarize';
-import { connectDB, disconnectDB } from '../../src/db/connect';
 import { Snippet } from '../../src/models/snippet';
 import { User } from '../../src/models/user';
 import { config } from '../../config';
+
+const app = initApp();
 
 const wordLimit = config.wordLimit;
 const testUser = { email: 'snippetuser@example.com', password: 'TestPass123!' };
 let cookie: string;
 
 beforeAll(async () => {
-  await connectDB(true);
   await User.deleteMany({ email: testUser.email });
   await request(app).post('/api/auth/signup').send(testUser);
   const loginRes = await request(app).post('/api/auth/login').send(testUser);
@@ -25,7 +23,6 @@ beforeAll(async () => {
 afterAll(async () => {
   await Snippet.deleteMany({});
   await User.deleteMany({ email: testUser.email });
-  await disconnectDB();
 });
 beforeEach(async () => {
   await Snippet.deleteMany({});
@@ -204,7 +201,6 @@ describe('Snippets API', () => {
       const res = await request(app)
         .get('/api/snippets/64b7e7e7e7e7e7e7e7e7e7e7')
         .set( 'Cookie', cookie );
-      console.log(res.body)
       expect(res.status).toBe(404);
     });
   });

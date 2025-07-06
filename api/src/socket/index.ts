@@ -1,9 +1,10 @@
 import { Express } from 'express';
-import { Server, Socket } from 'socket.io';
+import { Server } from 'socket.io';
+import { AuthSocket } from '../../types';
 import EVENTS from '../constants/events';
 import { getSummary } from './getSummary';
 
-export const handleSocket = (app: Express, io: Server, socket: Socket) => {
+export const handleSocket = (app: Express, io: Server, socket: AuthSocket) => {
     socket.on( EVENTS.GET_SUMMARY, getSummary( app, io, socket ) );
     socket.on( EVENTS.DISCONNECT, () =>
     {

@@ -1,14 +1,6 @@
 import { Snippet } from '../../src/models/snippet';
-import { connectDB, disconnectDB } from '../../src/db/connect';
-import { expect, test, afterAll, beforeAll, describe, it } from 'vitest';
+import { expect, describe, it } from 'vitest';
 import mongoose from 'mongoose';
-
-beforeAll(async () => {
-  await connectDB(true);
-});
-afterAll(async () => {
-  await disconnectDB();
-});
 
 describe('Snippet model', () => {
   it('rejects summaries over word limit', async () => {
