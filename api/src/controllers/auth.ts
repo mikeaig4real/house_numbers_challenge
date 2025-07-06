@@ -1,3 +1,4 @@
+import { AuthDTO } from './../schemas/auth.schema';
 import { Request, Response, NextFunction } from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
@@ -7,7 +8,11 @@ import { BadRequestError } from '../errors/badRequestError';
 import { CustomResponse } from '../responses/customResponse';
 import { User as UserType } from '../../types';
 
-export const signUp = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+export const signUp = async (
+  req: Request<{}, {}, AuthDTO>,
+  res: Response,
+): Promise<void> =>
+{
   const { email, password } = req.body;
   const existing = await User.findOne({ email });
   if (existing) {
@@ -22,7 +27,10 @@ export const signUp = async (req: Request, res: Response, next: NextFunction): P
   CustomResponse.created<Partial<UserType>>(res, { id: user.id, email: user.email });
 };
 
-export const login = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+export const login = async (
+  req: Request<{}, {}, AuthDTO>,
+  res: Response,
+): Promise<void> => {
   const { email, password } = req.body;
   const user = await User.findOne({ email });
   if (!user) {
@@ -39,7 +47,7 @@ export const login = async (req: Request, res: Response, next: NextFunction): Pr
   CustomResponse.success<Partial<UserType>>(res, { id: user.id, email: user.email });
 };
 
-export const logout = (req: Request, res: Response): void => {
+export const logout = (_: Request, res: Response): void => {
   const { maxAge, ...CLEAR_COOKIE_OPTIONS } = config.jwt.cookieOptions;
   res.clearCookie(config.jwt.cookieName, CLEAR_COOKIE_OPTIONS);
   res.status(204).end();

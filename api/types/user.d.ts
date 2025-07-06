@@ -7,7 +7,7 @@ export interface User {
   password: string;
 }
 
-export interface AuthRequest extends Request {
+export interface AuthRequest<Params = {}, ResBody = {}, ReqBody = {}> extends Request<Params, ResBody, ReqBody> {
   user?: Partial<User>;
 }
 

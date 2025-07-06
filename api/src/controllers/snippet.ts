@@ -8,11 +8,11 @@ import { BadRequestError } from '../errors/badRequestError';
 import { NotFoundError } from '../errors/notFoundError';
 import { CustomResponse } from '../responses/customResponse';
 import { Snippet as SnippetType } from '../../types';
+import { IdDTO, TextDTO } from "../schemas";
 
 export const createSnippet = async (
-  req: AuthRequest,
+  req: AuthRequest<{}, {}, TextDTO>,
   res: Response,
-  next: NextFunction,
 ): Promise<void> => {
   const { text } = req.body;
   const trimmedText = text.trim();
@@ -46,7 +46,11 @@ export const createSnippet = async (
   });
 };
 
-export const getAllSnippets = async (req: AuthRequest, res: Response, next: NextFunction) => {
+export const getAllSnippets = async (
+  req: AuthRequest,
+  res: Response,
+) =>
+{
   const snippets = await Snippet.find({ user: req.user!.id }).sort({ createdAt: -1 });
   CustomResponse.success<SnippetType[]>(
     res,
@@ -59,9 +63,8 @@ export const getAllSnippets = async (req: AuthRequest, res: Response, next: Next
 };
 
 export const getSnippetById = async (
-  req: AuthRequest,
+  req: AuthRequest<IdDTO>,
   res: Response,
-  next: NextFunction,
 ): Promise<void> => {
   const snippet = await Snippet.findOne({ _id: req.params.id, user: req.user!.id });
   if (!snippet) {
