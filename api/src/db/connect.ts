@@ -28,8 +28,7 @@ export async function connectDB(test: boolean = false): Promise<typeof mongoose>
 
 export async function disconnectDB(): Promise<void> {
   try {
-    if ( isConnected )
-    {
+    if (isConnected) {
       await mongoose.disconnect();
       isConnected = false;
     }

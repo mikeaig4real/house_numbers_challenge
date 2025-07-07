@@ -8,7 +8,7 @@ import { BadRequestError } from '../errors/badRequestError';
 import { NotFoundError } from '../errors/notFoundError';
 import { CustomResponse } from '../responses/customResponse';
 import { Snippet as SnippetType } from '../../types';
-import { IdDTO, TextDTO } from "../schemas";
+import { IdDTO, TextDTO } from '../schemas';
 
 export const createSnippet = async (
   req: AuthRequest<{}, {}, TextDTO>,
@@ -46,11 +46,7 @@ export const createSnippet = async (
   });
 };
 
-export const getAllSnippets = async (
-  req: AuthRequest,
-  res: Response,
-) =>
-{
+export const getAllSnippets = async (req: AuthRequest, res: Response) => {
   const snippets = await Snippet.find({ user: req.user!.id }).sort({ createdAt: -1 });
   CustomResponse.success<SnippetType[]>(
     res,
@@ -62,10 +58,7 @@ export const getAllSnippets = async (
   );
 };
 
-export const getSnippetById = async (
-  req: AuthRequest<IdDTO>,
-  res: Response,
-): Promise<void> => {
+export const getSnippetById = async (req: AuthRequest<IdDTO>, res: Response): Promise<void> => {
   const snippet = await Snippet.findOne({ _id: req.params.id, user: req.user!.id });
   if (!snippet) {
     throw new NotFoundError('Snippet not found.');

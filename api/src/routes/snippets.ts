@@ -3,7 +3,7 @@ import { Router } from 'express';
 import { requireAuth } from '../middleware/requireAuthExpress';
 import { createSnippet, getAllSnippets, getSnippetById } from '../controllers/snippet';
 import { createSnippetSchema, getSnippetByIdSchema } from '../schemas';
-import { validate } from '../middleware/validate';
+import { validate } from '../middleware/validateRequest';
 
 const router = Router();
 
