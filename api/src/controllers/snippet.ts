@@ -1,49 +1,42 @@
-import { summarizeContent } from '../services/summarize';
-import { countWords } from '../utils';
+import { normalizeErrorMessage } from '../utils';
 import { AuthRequest } from './../../types';
-import { Response, NextFunction } from 'express';
-import { Snippet } from '../models/snippet';
-import { config } from '../../config';
+import { Response } from 'express';
+import { ISnippet, Snippet } from '../models/snippet';
 import { BadRequestError } from '../errors/badRequestError';
 import { NotFoundError } from '../errors/notFoundError';
 import { CustomResponse } from '../responses/customResponse';
 import { Snippet as SnippetType } from '../../types';
 import { IdDTO, TextDTO } from '../schemas';
+import { snippetService } from '../services/snippet.service';
 
 export const createSnippet = async (
   req: AuthRequest<{}, {}, TextDTO>,
   res: Response,
-): Promise<void> => {
-  const { text } = req.body;
-  const trimmedText = text.trim();
-  const existingSnippet = await Snippet.findOne({ text: trimmedText, user: req.user!.id });
-  if (existingSnippet) {
-    CustomResponse.success<SnippetType>(res, {
-      id: existingSnippet.id,
-      text: existingSnippet.text,
-      summary: existingSnippet.summary,
+): Promise<void> =>
+{
+  const onDone = ( snippet: ISnippet, type?: 'created' | 'success' ) =>
+  {
+    CustomResponse[type!]<SnippetType>(res, {
+      id: snippet.id,
+      text: snippet.text,
+      summary: snippet.summary,
     });
-    return;
   }
-  const wordCount = countWords(trimmedText);
-  const normalizedLimit = Math.min(config.wordLimit, wordCount);
-  const { error, text: summary } = await summarizeContent(trimmedText, normalizedLimit);
-  if (error) {
-    throw new BadRequestError('Failed to summarize content.');
-  }
-  const summaryWordCount = countWords(summary);
-  if (summaryWordCount > config.wordLimit) {
-    throw new BadRequestError(
-      `Summary must be ${config.wordLimit} words or fewer, but got ${summaryWordCount}.`,
-    );
-  }
-  const snippet = new Snippet({ text: trimmedText, summary, user: req.user!.id });
-  await snippet.save();
-  CustomResponse.created<SnippetType>(res, {
-    id: snippet.id,
-    text: snippet.text,
-    summary: snippet.summary,
-  });
+  const { text } = req.body;
+  await snippetService(
+    text,
+    req.user!,
+    false,
+    () => {},
+    (e) => {
+      const message = normalizeErrorMessage(e, 'Failed to summarize content.');
+      throw new BadRequestError(message);
+    },
+    (message) => {
+      throw new BadRequestError(message);
+    },
+    onDone,
+  );
 };
 
 export const getAllSnippets = async (req: AuthRequest, res: Response) => {
