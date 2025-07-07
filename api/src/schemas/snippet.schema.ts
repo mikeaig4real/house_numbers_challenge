@@ -1,34 +1,23 @@
 import { z } from 'zod';
-import { config } from '../../config';
-import { countWords } from "../utils";
+import { textValidator } from './text.schema';
 
-export const textValidator = z.object({
-  text: z
-    .string()
-    .trim()
-    .min(1, { message: 'Invalid or empty text provided.' })
-    .refine(
-      (val) => {
-        const wordCount = countWords(val);
-        return wordCount >= config.wordDelta;
-      },
-      { message: `Text must contain at least ${config.wordDelta} words.` },
-    ),
-} );
-
-export type TextDTO = z.infer<typeof textValidator>;
-
-export const createSnippetSchema = z.object( {
-  body: textValidator,
+export const textObjValidator = z.object({
+  text: textValidator,
 });
 
-export const getSnippetByIdSchema = z.object( {
+export type TextDTO = z.infer<typeof textObjValidator>;
+
+export const createSnippetSchema = z.object({
+  body: textObjValidator,
+});
+
+export const getSnippetByIdSchema = z.object({
   params: z.object({
-    id: z.string(),
+    id: z.string().trim(),
   }),
-} );
+});
 
 export type IdDTO = z.infer<typeof getSnippetByIdSchema>['params'];
 export const streamTextSchema = z.object({
-  params: textValidator,
+  params: textObjValidator,
 });

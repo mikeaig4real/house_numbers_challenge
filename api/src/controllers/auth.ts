@@ -8,11 +8,7 @@ import { BadRequestError } from '../errors/badRequestError';
 import { CustomResponse } from '../responses/customResponse';
 import { User as UserType } from '../../types';
 
-export const signUp = async (
-  req: Request<{}, {}, AuthDTO>,
-  res: Response,
-): Promise<void> =>
-{
+export const signUp = async (req: Request<{}, {}, AuthDTO>, res: Response): Promise<void> => {
   const { email, password } = req.body;
   const existing = await User.findOne({ email });
   if (existing) {
@@ -27,10 +23,7 @@ export const signUp = async (
   CustomResponse.created<Partial<UserType>>(res, { id: user.id, email: user.email });
 };
 
-export const login = async (
-  req: Request<{}, {}, AuthDTO>,
-  res: Response,
-): Promise<void> => {
+export const login = async (req: Request<{}, {}, AuthDTO>, res: Response): Promise<void> => {
   const { email, password } = req.body;
   const user = await User.findOne({ email });
   if (!user) {

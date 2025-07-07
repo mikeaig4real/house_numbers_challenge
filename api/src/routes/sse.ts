@@ -6,7 +6,7 @@ import {
   getSnippetByIdSchema,
   streamTextSchema,
 } from '../schemas/snippet.schema';
-import { validate } from '../middleware/validate';
+import { validate } from '../middleware/validateRequest';
 
 const router = Router();
 

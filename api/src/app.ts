@@ -32,7 +32,7 @@ const initApp = () => {
   });
 
   app.use(notFound);
-  app.use( errorHandler );
+  app.use(errorHandler);
 
   return app;
 };

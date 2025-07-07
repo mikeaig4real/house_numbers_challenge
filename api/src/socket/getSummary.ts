@@ -1,58 +1,31 @@
 import { Express } from 'express';
 import { Server } from 'socket.io';
 import { AuthSocket } from '../../types';
-import { countWords } from '../utils';
+import { countWords, normalizeErrorMessage } from '../utils';
 import { summarizeContentStream } from '../services/summarize';
 import { Snippet } from '../models/snippet';
-import { config } from "../../config";
+import { config } from '../../config';
 import EVENTS from '../constants/events';
-
-const wordLimit = config.wordLimit;
-const wordDelta = config.wordDelta;
+import { getSummarySchema, getSummaryDTO } from '../schemas';
 
 export const getSummary = (app: Express, io: Server, socket: AuthSocket) => {
-  return async (
-    {
-      text,
-      user,
-    }: {
-      text: string;
-      user: {
-        id?: string;
-      };
-    },
-    ack: (arg?: any) => void,
-  ) => {
-    if (!socket.user) {
-      ack({ data: null, error: true, message: 'User not found in socket' });
-      return;
-    }
-    if (!text || typeof text !== 'string' || text.trim().length === 0) {
-      ack({ data: null, error: true, message: 'Invalid or empty text provided.' });
-      return;
-    }
-
-    const trimmedText = text.trim();
-    const wordCount = countWords(trimmedText);
-
-    if (wordCount < wordDelta) {
-      ack({ data: null, error: true, message: `Text must contain at least ${wordDelta} words.` });
-      return;
-    }
+  return async (data: getSummaryDTO, ack: (arg?: any) => void) => {
     try {
-      const normalizedLimit = Math.min(wordLimit, wordCount);
+      const { text } = await getSummarySchema.parseAsync(data);
+      const wordCount = countWords(text);
+      const normalizedLimit = Math.min(config.wordLimit, wordCount);
       const { text: summary, error } = await summarizeContentStream(
         (chunk) => {
           socket.emit(EVENTS.SEND_SUMMARY, {
             data: {
-              text: trimmedText,
+              text,
               summary: chunk,
             },
             error: false,
             message: 'Streaming summary...',
           });
         },
-        trimmedText,
+        text,
         normalizedLimit,
       );
       if (error) {
@@ -60,12 +33,12 @@ export const getSummary = (app: Express, io: Server, socket: AuthSocket) => {
         ack({
           data: null,
           error: true,
-          message: `Failed to summarize content.`,
+          message: normalizeErrorMessage(error, `Failed to summarize content.`),
         });
         return;
       }
       const summaryWordCount = countWords(summary);
-      if (summaryWordCount > wordLimit) {
+      if (summaryWordCount > config.wordLimit) {
         ack({
           data: null,
           error: true,
@@ -73,7 +46,7 @@ export const getSummary = (app: Express, io: Server, socket: AuthSocket) => {
         });
         return;
       }
-      const snippet = new Snippet({ text: trimmedText, summary, user: socket.user!.id });
+      const snippet = new Snippet({ text, summary, user: socket.user!.id });
       await snippet.save();
       ack({
         data: {
@@ -86,11 +59,10 @@ export const getSummary = (app: Express, io: Server, socket: AuthSocket) => {
       });
     } catch (error) {
       console.error('Error during socket.io stream:', error);
-      const e = error as Error;
       ack({
         data: null,
         error: true,
-        message: e.message || `Failed to summarize content.`,
+        message: normalizeErrorMessage(error, `Failed to summarize content.`),
       });
     }
   };

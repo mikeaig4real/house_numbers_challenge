@@ -2,7 +2,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 import { GenerativeModel } from '@google/generative-ai';
 import { createModel, streamToCallBack } from '../utils';
-import { config } from "../../config";
+import { config } from '../../config';
 
 let globalModel: null | GenerativeModel = null;
 
@@ -10,7 +10,11 @@ const wordDelta = config.wordDelta;
 
 const wordLimit = config.wordLimit;
 
-export function makePrompt(text: string, wordCount: number = wordLimit, delta: number = wordDelta): string {
+export function makePrompt(
+  text: string,
+  wordCount: number = wordLimit,
+  delta: number = wordDelta,
+): string {
   return `Summarize the following content in ${Math.max(delta, wordCount - delta)} words or fewer:
 
     "${text}"
@@ -26,7 +30,10 @@ export function getModel(): GenerativeModel {
   return globalModel;
 }
 
-export async function summarizeContent(text: string, wordCount: number = wordLimit): Promise<{ error: boolean; text: string }> {
+export async function summarizeContent(
+  text: string,
+  wordCount: number = wordLimit,
+): Promise<{ error: boolean; text: string }> {
   try {
     const model = getModel();
     const prompt = makePrompt(text, wordCount);
@@ -35,7 +42,7 @@ export async function summarizeContent(text: string, wordCount: number = wordLim
     return {
       error: false,
       text: responseText,
-    }
+    };
   } catch (error) {
     console.error('Error summarizing content:', error);
     return {
@@ -53,16 +60,15 @@ export async function summarizeContentStream(
   error: boolean;
   text: string;
 }> {
-  try
-  {
-    let fullText = "";
+  try {
+    let fullText = '';
     const model = getModel();
     const prompt = makePrompt(text, wordCount);
     const { stream } = await model.generateContentStream(prompt);
     await streamToCallBack(stream, (chunk) => {
-      cb( chunk );
+      cb(chunk);
       fullText += chunk;
-    } );
+    });
     return {
       error: false,
       text: fullText,

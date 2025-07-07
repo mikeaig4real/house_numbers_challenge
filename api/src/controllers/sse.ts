@@ -4,13 +4,17 @@ import { summarizeContentStream } from '../services/summarize';
 import { countWords } from '../utils';
 import { AuthRequest } from './../../types';
 import { config } from '../../config';
+import { TextDTO } from '../schemas';
 
-export const streamBySSE = async (req: AuthRequest, res: Response): Promise<void> => {
+export const streamBySSE = async (
+  req: AuthRequest<TextDTO, {}, {}>,
+  res: Response,
+): Promise<void> => {
   res.setHeader('Content-Type', 'text/event-stream');
   res.setHeader('Cache-Control', 'no-cache');
   res.setHeader('Connection', 'keep-alive');
   res.flushHeaders();
-  
+
   try {
     const { text } = req.params;
     const trimmedText = text.trim();

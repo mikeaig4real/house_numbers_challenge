@@ -1,8 +1,8 @@
 import mongoose, { Schema, Document, Types } from 'mongoose';
 import { Snippet as SnippetType } from '../../types';
-import { config } from "../../config";
+import { config } from '../../config';
 
-export interface ISnippet extends Omit<SnippetType, "id">, Document {
+export interface ISnippet extends Omit<SnippetType, 'id'>, Document {
   user: Types.ObjectId;
 }
 
