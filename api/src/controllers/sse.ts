@@ -3,6 +3,7 @@ import { countWords, normalizeErrorMessage } from '../utils';
 import { AuthRequest } from './../../types';
 import { TextDTO } from '../schemas';
 import { snippetService } from "../services/snippet.service";
+import { ISnippet } from "../models/snippet";
 
 export const streamBySSE = async (
   req: AuthRequest<TextDTO, {}, {}>,
@@ -18,28 +19,36 @@ export const streamBySSE = async (
     );
     res.end();
   };
+  const onDone = ( snippet: ISnippet, type?: 'created' | 'success' ) =>
+  {
+    const snippetAsString = JSON.stringify( {
+      id: snippet.id,
+      text: snippet.text,
+      summary: snippet.summary,
+    } );
+    res.write(`event: end\ndata: ${snippetAsString}\n\n`);
+    res.end();
+  };
   try {
     const { text } = req.params;
     await snippetService(
       text,
       req.user!,
       true,
-      ( chunk ) =>
-      {
+      (chunk) => {
         res.write(`data: ${chunk}\n\n`);
       },
       onError,
-      (message) =>
-      {
+      (message) => {
         res.write(`event: error\ndata: ${message}\n\n`);
         res.end();
       },
-      () =>
-      {
-        res.write('event: end\ndata: done\n\n');
-        res.end();
-      }
-    )
+      onDone,
+    );
+    req.on('close', () => {
+      console.log('Client disconnected from SSE stream');
+      res.end();
+    });    
   } catch (error) {
     console.error('Error during SSE stream:', error);
     onError( error );
